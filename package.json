@@ -1,0 +1,25 @@
+{
+    "name": "chronologic",
+    "author": "1.0.0",
+    "description": "",
+    "homepage": "",
+    "license": "Apache License 2.0",
+    "version": "",
+    "private": false,
+    "scripts": {
+        "start": "",
+        "unit": "",
+        "test": "",
+        "lint": "",
+        "build": ""
+    },
+    "keywords": "",
+    "repository": "https://github.com/bargross/chronologic",
+    "main": "chronologic.js",
+    "dependencies": {},
+    "devDependencies": {
+        "eslint": "^6.6.0"
+    },
+    "engines": {},
+    "browserlist": {}
+}
