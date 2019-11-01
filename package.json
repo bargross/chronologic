@@ -1,25 +1,36 @@
 {
-    "name": "chronologic",
-    "author": "1.0.0",
-    "description": "",
-    "homepage": "",
-    "license": "Apache License 2.0",
-    "version": "",
-    "private": false,
-    "scripts": {
-        "start": "",
-        "unit": "",
-        "test": "",
-        "lint": "",
-        "build": ""
-    },
-    "keywords": "",
-    "repository": "https://github.com/bargross/chronologic",
-    "main": "chronologic.js",
-    "dependencies": {},
-    "devDependencies": {
-        "eslint": "^6.6.0"
-    },
-    "engines": {},
-    "browserlist": {}
+  "name": "chronologic",
+  "author": "1.0.0",
+  "description": "# Description",
+  "homepage": "https://github.com/bargross/chronologic#readme",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "",
+    "unit": "",
+    "test": "",
+    "lint": "",
+    "build": ""
+  },
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bargross/chronologic.git"
+  },
+  "main": "chronologic.js",
+  "dependencies": {
+    "jshint": "^2.10.2"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0"
+  },
+  "engines": {},
+  "browserlist": {},
+  "bugs": {
+    "url": "https://github.com/bargross/chronologic/issues"
+  },
+  "version": "1.0.0",
+  "directories": {
+    "test": "test"
+  }
 }

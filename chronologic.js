@@ -132,7 +132,6 @@ chronologic.prototype = {
         }
         return year;
     },
-    // TODO: Implement getTime()
     toString:  function() {
         return this.date;
     },
@@ -176,8 +175,8 @@ chronologic.prototype = {
                 return false;
         }
     },
-    isValidYear: function(year, format) { // no date inference yet
-        return isValidYear(year, format);
+    isValidYear: function(year) {
+        return isValidYear(year);
     },
     includesTime: function(date) {
         return includesTime(date);
@@ -447,28 +446,31 @@ const isValidMonth = (month) => {
 */
 const isValidYear = (year) => {
     let validYear;
-    if(assertTypeOf(year, 'string') && stringIsNumeric(year)) {
-            validYear = parseInt(year);
-    } else {
+	if(assertTypeOf(year, 'string') && stringIsNumeric(year)) {
+        validYear = parseInt(year);
+    } else if(assertTypeOf(year, 'number')) {
         validYear = year;
+    } else {
+		return false;
     }
-    if(!validYear) {
-        return false;
-    } 
-
-    const digits = Math.log(validYear) * Math.LOG10E + 1 | 0;
+	
+    const getDigitCount = (value) => Math.round(Math.log(value) * Math.LOG10E + 1);
     
-    const currentYear = new Date().getFullYear();
-    return (Math.round(Math.log10(validYear) + 1) < Math.round(Math.log10(currentYear) + 1)) && validYear <= currentYear;
+	const currentYear = new Date().getFullYear();
+	const length = getDigitCount(validYear); 
+	const currentLength = getDigitCount(currentYear); // ??
+    return length <= currentLength && validYear <= currentYear;
 };
 
 const isValidDay = (part) => {
     if(assertTypeOf(part, 'string') && isNaN(part)) {
         const numericValue = Number(part);
         return numericValue >= 0 && numericValue <= 12;
-    } else if(part.length > 2) {
+    } 
+	
+	if(part.length > 2) {
         return days.dayExists(part);
-    }
+    } 
 };
 
 const isAbbreviatedOrFullName = (part) => {
@@ -850,8 +852,8 @@ const genMonthFromDate = function(fromDay, toDay, month, year, delimeter, positi
 
     const days = [];
     let startDay = fromDay;
-    let date = [];
     while(!finished) {
+        let date = [];
         // TODO: test this section, using an array might not be a viable solution to concatenate the date value into one
         // const replaceValue = (positions, date, value) => date.replace(date.substring(positions.start, positions.end), value);
 
