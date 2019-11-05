@@ -255,7 +255,7 @@ const days = {
         { fullName: 'Saturday',  abbrName: 'Sat' },
         { fullName: 'Sunday',    abbrName: 'Sun' }
     ],
-    // TODO: Review fetch function for day
+    // TODO: Review fetch function for name
     getInfo: function(day=-1|'', option=''|'name'|'abbr'|'number'|'all') {
         if(!isNaN(day) && day < 1 && day > 7) {
             return '';
@@ -321,26 +321,17 @@ const days = {
 const formats = {
     regexOf: {
         day: [ // look for regular expressions to match the exact string
-            { stringFormat: ['dd', 'ddd'], regex: /^d+d/ },
-            { stringFormat: ['DD', 'DDD'], regex: /^D+D/ },
+            { regex: /dd/ },
+            { regex: /DDD/, isAbbreviated: true },
         ],
         month: [
-            { stringFormat: ['mm', 'mmm', 'mmmm'], regex: /mm/ , isAbbreviated: false },
-            { stringFormat: ['MM', 'MMM', 'MMMM'], regex: /MM/ , isAbbreviated: false }
+            { regex: /mm/ , isAbbreviated: false },
+            { regex: /MM/ , isAbbreviated: false },
+            { regex: /mmm/ , isAbbreviated: true },
+            { regex: /MMM/ , isAbbreviated: true }
         ],
         year: [
-           { stringFormat: ['yyyy'], regex: /yyyy/     },
-        ],
-        hour: [
-            { stringFormat: ['hh'], regex: /hh/ },
-            { stringFormat: ['HH'], regex: /HH/ },
-        ],
-        minutes: [
-            { stringFormat: ['mm'], regex: /mm/ },
-            
-        ],
-        seconds: [
-            { stringFormat: ['s'], regex: /ss/    }
+           {  regex: /yyyy/  },
         ],
         defaultLongDateFormat: { // must be able to detect full format
             LTS  : 'h:mm:ss A',
@@ -748,18 +739,19 @@ const get = (date, format, option, parse) => {
 		return position;
     }
     
-    if(option === 'all') {
-        const result = {};
-		console.log(position);
-        Object.keys(position).forEach( key => {
-            const part = getDatePartByPosition(date, position[key]);
-            result[key] = parse ? parseInt(part) : part;
-        });
-        return result;
-    } else {
-        const part = getDatePartByPosition(date, position);
-        return parse ? parseInt(part) : part;
+    const part = getDatePartByPosition(date, position);
+    if(parse) {   
+        if(option === 'all') {
+            Object.keys(part).forEach(result => {
+                result[key] = parseInt(part);
+            });
+            return result;
+        } else {
+            return parseInt(part);
+        }
     }
+
+    return part
 };
 
 /*
@@ -820,12 +812,12 @@ const replaceValue = (value='', position={}, container='', option='') => {
 */
 const getDatePartByPosition = (date, position) => {
     const keys = Object.keys(position);
-    
     const values = {
         day: undefined,
         month: undefined,
         year: undefined
     };
+
     switch(keys.length) {
         case 2:
             return date.substring(position.start, position.end);
@@ -847,37 +839,48 @@ const getDatePartByPosition = (date, position) => {
     @return
     @description
 */
-const genMonthFromDate = function(fromDay, toDay, month, year, delimeter, positions) {
-    let finished = false;
-
-    const days = [];
-    let startDay = fromDay;
-    while(!finished) {
+const genMonthFromDate = function(from, to, month, year, delimeter) {
+    const fullMonth = [];
+	const fromDate = new Date(from);
+	const toDate = new Date(to);
+	
+	let firstCall = true;
+    while(fromDate != toDate) {
         let date = [];
         // TODO: test this section, using an array might not be a viable solution to concatenate the date value into one
         // const replaceValue = (positions, date, value) => date.replace(date.substring(positions.start, positions.end), value);
 
-        date[positions.day] = startDay;
+        date[positions.day] = fromDate;
         date[positions.month] = month;
         date[positions.year] = year;
 
-       const dayOfWeek = getDayOfWeek(startDay, month, year);
+       const dayOfWeek = getDayOfWeek(fromDate, month, year);
        const dayInfo = {
-            calendarDate: date.join(delimeter), 
-            dayName: this.days[dayOfWeek],
+            calendarDate: firstCall ? from : date.join(delimeter), 
+            dayName: days.getInfo(dayOfWeek, 'name'),
             dayOfWeek: dayOfWeek,
-            monthDay: startDay,
+            monthDay: fromDate.toLocaleDateString(),
             timeSet: { time: '00:00:00', format: '' },
-            week: getWeekNumber(date.toLocaleString())
+            week: getWeekNumber(date.toLocaleDateString())
         };
-
-        days.push(dayInfo);
-        if(startDay <= toDay) {
-            startDay++;
-            finished = true;
+        fullMonth.push(dayInfo);
+        if(fromDate == toDate) {
+          break;
         }
+
+		fromDate++;        
     }
-    return days;
+	
+	fullMonth.push({
+        calendarDate: to, 
+        dayName: days.getInfo(dayOfWeek, 'name'),
+        dayOfWeek: dayOfWeek,
+        monthDay: fromDate.toLocaleDateString(),
+        timeSet: { time: '00:00:00', format: '' },
+        week: getWeekNumber(date.toLocaleDateString())
+    });
+	
+    return fullMonth;
 };
 
 //
@@ -957,28 +960,29 @@ const isLeapYear = (year) => {
     @description finds a time value within a specific string
 */
 const detectTime = (date='') => {
-    let time;
-    if(date.indexOf(',') !== -1) {
-        time = date.split(',')[date.length-1].trim();
-        if(!isValidTime(time)) {
-            return '';
-        } 
-        
-        return time; 
-    } else {
-        const matchedValue = date.indexOf(':');
-        if(matchedValue > -1) {
-            time = date.substring(matchedValue-2, date.length);
-            const occurances = time.split('').filter(val => val === ':').length;
-            let missingIndexes = 2;
-            
-            if(time.match(/[.]/) !== -1) {
-                missingIndexes += ((missingIndexes * 2) + 1);
+	return checkAndExecuteSingleStringValue(date, '', (validDate) => {
+		let time;
+        if(date.indexOf(',') !== -1) {
+            time = validDate.split(',')[validDate.length-1].trim();
+            if(!isValidTime(time)) {
+                return '';
+            } 
+
+            return time; 
+        } else {
+            const matchedValue = validDate.indexOf(':');
+            if(matchedValue > -1) {
+                time = validDate.substring(matchedValue-2, validDate.length);
+                const occurances = time.split('').filter(val => val === ':').length;
+                let missingIndexes = 2;
+
+                if(time.indexOf('.') !== -1) {
+                    missingIndexes += ((missingIndexes * 2) + 1);
+                }
+                return time.substring(0, 3*occurances+missingIndexes );
             }
-            return time.substring(0, 3*occurances+missingIndexes );
         }
-    }
-    return '';
+    });
 };
 
 /*
@@ -1110,7 +1114,7 @@ const includesTime = (date) => {
         return false;
     }
 
-    if(isEmpty(date.match(/[,]/))) {
+    if(isEmpty(date.indexOf(','))) {
         return false;
     }
 
