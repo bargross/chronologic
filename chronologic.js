@@ -7,7 +7,7 @@ function chronologic(date='', format='', options={}) {
         const dateArrayString = date.split(',');
         dateOnly = dateArrayString[0];
         time = detectTime(dateArrayString[1])
-    }
+    } 
     
     const day   = getDatePart(date, format, 'day', true);
     const month = getDatePart(date, format, 'month', true);
