@@ -7,7 +7,7 @@ function chronologic(date='', format='', options={}) {
         const dateArrayString = date.split(',');
         dateOnly = dateArrayString[0];
         time = detectTime(dateArrayString[1])
-    } 
+    }
     
     const day   = getDatePart(date, format, 'day', true);
     const month = getDatePart(date, format, 'month', true);
@@ -28,9 +28,9 @@ function chronologic(date='', format='', options={}) {
     const actualTime = actualDate.toLocaleTimeString();
     
     const actualDateString = actualDate.toLocaleDateString();
-    const dayPart = getDatePart(actualDateString, 'dd/MM/yyyy', 'day', true);
-    const monthPart = getDatePart(actualDateString, 'dd/MM/yyyy', 'month', true);
-    const yearPart = getDatePart(actualDateString, 'dd/MM/yyyy', 'year', true);
+    const dayPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'day', true);
+    const monthPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'month', true);
+    const yearPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'year', true);
     
     this.currentDay  = {
         name: days.getInfo(actualDate.getDay(), 'fullName'),
@@ -47,11 +47,23 @@ function chronologic(date='', format='', options={}) {
         format: 'dd/MM/yyyy'
     };
 
-    // TODO: Re-do last day of the year
-    // lastDayOfTheYear   = { 
-    //     name: isShallowInstance ? days[lastDayOfYear] : '',
-    //     number: 31 
-    // };
+    const lastDayDate = `01/12/${year}`;
+    const allDateParts = getDatePart(lastDayDate, format, 'all', true);
+    const lastDayDateDayOfWeek = getDayOfWeekByDate(lastDayDate, format);
+    this.lastDayOfTheYear   = { 
+        name: getWeekDayName(lastDayDateDayOfWeek, 'fullName'),
+        weekDay: getWeekDayName(allDateParts.day, allDateParts.month, year),
+        day: allDateParts.day,
+        timeSet: { 
+            time: '00:00:00', 
+            format: inferTimeFormat(this.time) 
+        },
+        week: getWeekNumber(lastDayDate, year),
+        year: year,
+        month: allDateParts.month,
+        fullDate: `${allDateParts.day}/${ (allDateParts.month > 9 ? allDateParts.month : '0'+allDateParts.month) }/${year}`,
+        format: 'dd/MM/yyyy' 
+    };
     
     this.weeksLeft       = 52 - week;
     this.currentWeek     = week;
@@ -742,10 +754,10 @@ const get = (date, format, option, parse) => {
     const part = getDatePartByPosition(date, position);
     if(parse) {   
         if(option === 'all') {
-            Object.keys(part).forEach(result => {
-                result[key] = parseInt(part);
+			Object.keys(part).forEach(key => {
+                part[key] = parseInt(part[key]);
             });
-            return result;
+            return part;
         } else {
             return parseInt(part);
         }
@@ -811,8 +823,10 @@ const replaceValue = (value='', position={}, container='', option='') => {
     @description
 */
 const getDatePartByPosition = (date, position) => {
-    const keys = Object.keys(position);
-    const values = {
+    const count = 0;
+	console.log("Exeution count: "+count++, position);
+	const keys = Object.keys(position);
+	const values = {
         day: undefined,
         month: undefined,
         year: undefined
@@ -921,6 +935,18 @@ const getDayOfWeek = function(day, month, year) {
     const dayOfWeek = (nYear + nYear/4 - nYear/100 + nYear/400 + tDays[month-1] + day) % 7;
     return Math.ceil(dayOfWeek);
 };
+
+const getDayOfWeekByDate = function(date='', format='') {
+    return checkAndExecute(date, format, '', (sanitizedDate, sanitizedFormat) => {
+		console.log('Executed');
+        const allDateParts = getDatePart(sanitizedDate, sanitizedFormat, 'all', true);
+		console.log('Result: ', allDateParts);
+        const dayOfWeek = getDayOfWeek(allDateParts.day, allDateParts.month, allDateParts.year);
+		
+		if(dayOfWeek) return dayOfWeek;
+		else throw Error('Invalid date provided'); 
+    });
+}
 
 //
 // evaluates a year from a Date data type, to determine whether the year provided
