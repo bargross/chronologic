@@ -4,14 +4,14 @@ function chronologic(date='', format='', options={}) {
     let dateOnly;
     let time;
     if(includesTime(date)) {
-        const dateArrayString = date.split(',');
+        var dateArrayString = date.split(',');
         dateOnly = dateArrayString[0];
         time = detectTime(dateArrayString[1])
     }
     
-    const day   = getDatePart(date, format, 'day', true);
-    const month = getDatePart(date, format, 'month', true);
-    const year  = getDatePart(date, format, 'year', true);
+    var day   = getDatePart(date, format, 'day', true);
+    var month = getDatePart(date, format, 'month', true);
+    var year  = getDatePart(date, format, 'year', true);
 
     this.timeFormat = inferTimeFormat(time);
     this.day    = day;
@@ -21,16 +21,16 @@ function chronologic(date='', format='', options={}) {
 	this.time   = time;
 	this.format = format;
     
-    const week = getWeekNumber(date, year);
+    var week = getWeekNumber(date, year);
 	this.week  = week;
     
-	const actualDate = new Date();
-    const actualTime = actualDate.toLocaleTimeString();
+	var actualDate = new Date();
+    var actualTime = actualDate.toLocaleTimeString();
     
-    const actualDateString = actualDate.toLocaleDateString();
-    const dayPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'day', true);
-    const monthPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'month', true);
-    const yearPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'year', true);
+    var actualDateString = actualDate.toLocaleDateString();
+    var dayPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'day', true);
+    var monthPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'month', true);
+    var yearPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'year', true);
     
     this.currentDay  = {
         name: days.getInfo(actualDate.getDay(), 'fullName'),
@@ -47,9 +47,9 @@ function chronologic(date='', format='', options={}) {
         format: 'dd/MM/yyyy'
     };
 
-    const lastDayDate = `01/12/${year}`;
-    const allDateParts = getDatePart(lastDayDate, format, 'all', true);
-    const lastDayDateDayOfWeek = getDayOfWeekByDate(lastDayDate, format);
+    var lastDayDate = `01/12/${year}`;
+    var allDateParts = getDatePart(lastDayDate, format, 'all', true);
+    var lastDayDateDayOfWeek = getDayOfWeekByDate(lastDayDate, format);
     this.lastDayOfTheYear   = { 
         name: getWeekDayName(lastDayDateDayOfWeek, 'fullName'),
         weekDay: getWeekDayName(allDateParts.day, allDateParts.month, year),
@@ -85,9 +85,9 @@ chronologic.prototype = {
         return '';
     },
     genMonthFromDate: function(date='', format='') {
-        const dateParts = getDatePart(date, format, 'all', true);
-        const monthInfo = months.getInfo(dateParts.month, 'all', dateParts.year);
-        const positions = formats.findPosition(format, 'all');
+        var dateParts = getDatePart(date, format, 'all', true);
+        var monthInfo = months.getInfo(dateParts.month, 'all', dateParts.year);
+        var positions = formats.findPosition(format, 'all');
         return genMonthFromDate(1, monthInfo.length, dateParts.month, dateParts.year, positions);
     },
 
@@ -102,9 +102,9 @@ chronologic.prototype = {
     setOptions: function(options)  { this.options = options; },
 
     getMonthCalendarName: function(date='', format='') {
-        const result = checkAndExecute(date, format, '', (date, format) => {
-            const month = getDatePart(date, format, 'month');
-            const year = getDatePart(date, format, 'year');
+        var result = checkAndExecute(date, format, '', (date, format) => {
+            var month = getDatePart(date, format, 'month');
+            var year = getDatePart(date, format, 'year');
             return months.getInfo(month, 'name', year);
         });
 
@@ -202,7 +202,7 @@ chronologic.prototype = {
 //                                                    Maps
 //====================================================================================================================
 
-const months = {
+var months = {
     info: [
         { fullName: 'January',    abbrName: 'Jan', length: 31 },
         { fullName: 'February',   abbrName: 'Feb', length: 28 },
@@ -234,7 +234,7 @@ const months = {
         if(!isNaN(month) && (month < 0 || month > 12 ) ) {
             return {};
         }
-        const info = getInfo(month, this.info, option);
+        var info = getInfo(month, this.info, option);
         if(month === 2 && year > 0 && isLeapYear(year)) {
             info.length = info.length + 1;
         }
@@ -257,7 +257,7 @@ const months = {
 };
 
 
-const days = {
+var days = {
     info: [
         { fullName: 'Monday',    abbrName: 'Mon' },
         { fullName: 'Tuesday',   abbrName: 'Tue' },
@@ -273,7 +273,7 @@ const days = {
             return '';
         }
         
-        const getByType = (day) => {
+        var getByType = (day) => {
             if(assertTypeOf(day, 'number')) {
                 if(day === 0) {
                     return (this.info[day])[option];
@@ -282,7 +282,7 @@ const days = {
             }
 
             if(assertTypeOf(day, 'string')) {
-                const lowerCaseDay = day.toLowerCase();
+                var lowerCaseDay = day.toLowerCase();
                 let result = -1;
                 this.info.forEach( (dayInfo, index) => {
                     if(dayInfo.fullName === lowerCaseDay || dayInfo.abbrName === lowerCaseDay) {
@@ -297,7 +297,7 @@ const days = {
                                 result = index+1;
                                 break;
                             // case 'all':
-                            //     const all = dayInfo;
+                            //     var all = dayInfo;
                             //     all['number'] = index+1;
                                 
                             //     return all;
@@ -330,7 +330,7 @@ const days = {
     }
 };
 
-const formats = {
+var formats = {
     regexOf: {
         day: [ // look for regular expressions to match the exact string
             { regex: /dd/ },
@@ -360,7 +360,7 @@ const formats = {
         }
         
         if(option === 'all') {
-            const result = {
+            var result = {
                 day: findIndexes(format, this.regexOf.day),
                 month: findIndexes(format, this.regexOf.month),
                 year: findIndexes(format, this.regexOf.year)
@@ -378,15 +378,15 @@ const formats = {
 
 // Promise resolve-reject methods
 
-// const resolve = (callback = () => { }, value) => {
+// var resolve = (callback = () => { }, value) => {
 //     return '';
 // };
 
-// const reject = (callback = () => { }, value) => {
+// var reject = (callback = () => { }, value) => {
 //     return '';
 // };
 
-// const wrap = (resolve, reject) => {
+// var wrap = (resolve, reject) => {
 //     return new Promise(resolve, reject);
 // };
 
@@ -405,7 +405,7 @@ const formats = {
     then it will return true as we're only checking for the properties we require not properties added
     by the user(developer)
 */
-// const isValidMonthObject = (month={}) => {
+// var isValidMonthObject = (month={}) => {
 //     if(isValidMonth(month))
 //         return (
 //             month.hasOwnProperty('name') &&
@@ -420,7 +420,7 @@ const formats = {
 //     return false;
 // };
 
-const isValidMonth = (month) => {
+var isValidMonth = (month) => {
     let validMonth;
     if(assertTypeOf(month, 'number')) {
         validMonth = month;
@@ -447,7 +447,7 @@ const isValidMonth = (month) => {
     @return
     @description
 */
-const isValidYear = (year) => {
+var isValidYear = (year) => {
     let validYear;
 	if(assertTypeOf(year, 'string') && stringIsNumeric(year)) {
         validYear = parseInt(year);
@@ -457,17 +457,17 @@ const isValidYear = (year) => {
 		return false;
     }
 	
-    const getDigitCount = (value) => Math.round(Math.log(value) * Math.LOG10E + 1);
+    var getDigitCount = (value) => Math.round(Math.log(value) * Math.LOG10E + 1);
     
-	const currentYear = new Date().getFullYear();
-	const length = getDigitCount(validYear); 
-	const currentLength = getDigitCount(currentYear); // ??
+	var currentYear = new Date().getFullYear();
+	var length = getDigitCount(validYear); 
+	var currentLength = getDigitCount(currentYear); // ??
     return length <= currentLength && validYear <= currentYear;
 };
 
-const isValidDay = (part) => {
+var isValidDay = (part) => {
     if(assertTypeOf(part, 'string') && isNaN(part)) {
-        const numericValue = Number(part);
+        var numericValue = Number(part);
         return numericValue >= 0 && numericValue <= 12;
     } 
 	
@@ -476,8 +476,8 @@ const isValidDay = (part) => {
     } 
 };
 
-const isAbbreviatedOrFullName = (part) => {
-    const result = {
+var isAbbreviatedOrFullName = (part) => {
+    var result = {
         isAbbrDay: false,
         isAbbrMonth: false,
         isFullDayName: false,
@@ -497,17 +497,17 @@ const isAbbreviatedOrFullName = (part) => {
     return result;
 };
 
-const isDay = (part) => {
-    const isAbbr = isAbbreviatedOrFullName(part);
+var isDay = (part) => {
+    var isAbbr = isAbbreviatedOrFullName(part);
     return (stringIsNumeric(part) && isValidDay(part)) || (isAbbr.isFullDayName || isAbbr.isAbbrDay);
 };
 
-const isMonth = (part) => {
-    const isAbbr = isAbbreviatedOrFullName(part);
+var isMonth = (part) => {
+    var isAbbr = isAbbreviatedOrFullName(part);
     return (stringIsNumeric(part) && isValidMonth(part)) || (isAbbr.isFullMonthName || isAbbr.isAbbrMonth);
 };
 
-const isYear = (part) => stringIsNumeric(part) && isValidYear(part);
+var isYear = (part) => stringIsNumeric(part) && isValidYear(part);
 
 // Data Extraction
 // ============================================================
@@ -522,10 +522,10 @@ const isYear = (part) => stringIsNumeric(part) && isValidYear(part);
     @description Not used yet but will be used for the validation of time object representaiton
 */
 // TODO: this is assumming the standard format is dd/mm/yyyy
-const fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
-    const delimeter = findDelimeter(format);
+var fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
+    var delimeter = findDelimeter(format);
     
-    const month = getDatePart(currentDate, format, 'month'), 
+    var month = getDatePart(currentDate, format, 'month'), 
           year = getDatePart(currentDate, format, 'year'); 
 
     return day !== -1 ? `${day}${delimeter}${month}${delimeter}${year}` : '';
@@ -537,12 +537,12 @@ const fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
     @return
     @description Not used yet but will be used for the validation of time object representaiton
 */
-// const inferStandardFormat = (part='', format='') => {
+// var inferStandardFormat = (part='', format='') => {
 //     let dayAdded = false, monthAdded = false, yearAdded = false;
-//     const datePart = Number(part);
-//     const abbreviated = (part='', delimeter='', addDelimeter=false) => {
+//     var datePart = Number(part);
+//     var abbreviated = (part='', delimeter='', addDelimeter=false) => {
 //         if(part.length == 3) {
-//             const formatType = isAbbreviatedOrFullName(part);
+//             var formatType = isAbbreviatedOrFullName(part);
 //             if(formatType.isAbbrDay) {
 //                 format += `DDD${addDelimeter ? delimeter : ''}`;
 //                 dayAdded = !dayAdded;
@@ -593,16 +593,16 @@ const fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
 // };
 
 // TODO: comple date inferece functions
-// const inferFullDateFormat = (part='', format='') => {
+// var inferFullDateFormat = (part='', format='') => {
 //     let dayAdded = false, 
 //         monthAdded = false, 
 //         yearAdded = false, 
 //         abbrDayAdded = false, 
 //         abbrMonthAdded=false;
     
-//         const abbreviated = (part='', delimeter='', addDelimeter=false) => {
+//         var abbreviated = (part='', delimeter='', addDelimeter=false) => {
 //         if(part.length == 3) {
-//             const formatType = isAbbreviatedOrFullName(part);
+//             var formatType = isAbbreviatedOrFullName(part);
 //             if(formatType.isAbbrDay) {
 //                 format += `DDD${addDelimeter ? delimeter : ''}`;
 //                 abbrDayAdded = !abbrDayAdded;
@@ -625,17 +625,17 @@ const fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
     @return format
     @description from the date the function infers the format
 */
-// const inferDateFormat = (date='') => {
+// var inferDateFormat = (date='') => {
 //     let format = '';
 //     return checkAndExecuteSingleStringValue(date, format, (date) => {
 //         if(date === '') {
 //             return format;
 //         }
-//         const delimMatch = date.match(/[-,/,., ]/);
+//         var delimMatch = date.match(/[-,/,., ]/);
 //         if(delimMatch) {
-//             const dateOnly =  date.indexOf(',') !== -1 ? date.split(',')[0] : date; 
-//             const delimeter = delimMatch.toString();
-//             const dateArrayString = dateOnly.split(delimeter);
+//             var dateOnly =  date.indexOf(',') !== -1 ? date.split(',')[0] : date; 
+//             var delimeter = delimMatch.toString();
+//             var dateArrayString = dateOnly.split(delimeter);
             
 //             if(dateArrayString.length > 3) {
 //                 return 'will work on this soon';
@@ -661,17 +661,17 @@ const fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
     @return format
     @description from the date the function infers the format
 */
-const getFormat = (value) => {
+var getFormat = (value) => {
     return checkAndExecuteSingleStringValue(value, '', (validValue) => {
-        const delimeter = findDelimeter(validValue);
-        const delimeterGlobalRegex = new RegExp(delimeter, 'g');
+        var delimeter = findDelimeter(validValue);
+        var delimeterGlobalRegex = new RegExp(delimeter, 'g');
 
-        const indexes = {
+        var indexes = {
             day: '{1}',
             month: '{2}',
             year: '{3}'
         };
-        const result = [];
+        var result = [];
         switch(validValue.match(delimeterGlobalRegex).length) {
             case 2:
                 validValue.split(delimeter).map( (value) => {
@@ -706,8 +706,8 @@ const getFormat = (value) => {
     @return
     @description
 */
-const getWeekDayName = (day, month, year) => {
-    const dayOfWeek = getDayOfWeek(day, month, year);
+var getWeekDayName = (day, month, year) => {
+    var dayOfWeek = getDayOfWeek(day, month, year);
     return days.getInfo(dayOfWeek, 'name');
 };
 
@@ -716,7 +716,7 @@ const getWeekDayName = (day, month, year) => {
     @return
     @description
 */
-const getDatePart = (date='', format='', option='', parse) => {
+var getDatePart = (date='', format='', option='', parse) => {
     return checkAndExecute(date, format, -1, (curatedDate, curatedFormat) => get(curatedDate, curatedFormat, option, parse));
 };
 
@@ -726,7 +726,7 @@ const getDatePart = (date='', format='', option='', parse) => {
     @description gets the coordinates of a specific alement of the date string
     and returns the actual value (as a string, maybe add option to parse it)
 */
-const get = (date, format, option, parse) => {
+var get = (date, format, option, parse) => {
     let position;
     switch(option) {
         case 'day':
@@ -751,7 +751,7 @@ const get = (date, format, option, parse) => {
 		return position;
     }
     
-    const part = getDatePartByPosition(date, position);
+    var part = getDatePartByPosition(date, position);
     if(parse) {   
         if(option === 'all') {
 			Object.keys(part).forEach(key => {
@@ -771,7 +771,7 @@ const get = (date, format, option, parse) => {
     @return
     @description
  */
-const getInfo = (value=-1|'', arrayOfOptions=[], option='') => {
+var getInfo = (value=-1|'', arrayOfOptions=[], option='') => {
     if(value == 0) {
         value = 1;
     }
@@ -803,13 +803,13 @@ const getInfo = (value=-1|'', arrayOfOptions=[], option='') => {
     @return
     @description
 */
-const replaceValue = (value='', position={}, container='', option='') => {
+var replaceValue = (value='', position={}, container='', option='') => {
     if(Object.keys(position).length > 2) {
         console.warn("[replaceValue] only works with individual positoning!");
         return container;
     } else {
         if( !(option === 'day'|'month'|'year') ) {
-            const currentValue = container.substring(position.start, position.end+1);
+            var currentValue = container.substring(position.start, position.end+1);
             return container.replace(currentValue, value);
         }
         return container;
@@ -822,11 +822,11 @@ const replaceValue = (value='', position={}, container='', option='') => {
     @return
     @description
 */
-const getDatePartByPosition = (date, position) => {
-    const count = 0;
-	console.log("Exeution count: "+count++, position);
-	const keys = Object.keys(position);
-	const values = {
+var getDatePartByPosition = (date, position) => {
+    var count = 0;
+	// console.log("Exeution count: "+count++, position);
+	var keys = Object.keys(position);
+	var values = {
         day: undefined,
         month: undefined,
         year: undefined
@@ -853,23 +853,23 @@ const getDatePartByPosition = (date, position) => {
     @return
     @description
 */
-const genMonthFromDate = function(from, to, month, year, delimeter) {
-    const fullMonth = [];
-	const fromDate = new Date(from);
-	const toDate = new Date(to);
+var genMonthFromDate = function(from, to, month, year, delimeter) {
+    var fullMonth = [];
+	var fromDate = new Date(from);
+	var toDate = new Date(to);
 	
 	let firstCall = true;
     while(fromDate != toDate) {
         let date = [];
         // TODO: test this section, using an array might not be a viable solution to concatenate the date value into one
-        // const replaceValue = (positions, date, value) => date.replace(date.substring(positions.start, positions.end), value);
+        // var replaceValue = (positions, date, value) => date.replace(date.substring(positions.start, positions.end), value);
 
         date[positions.day] = fromDate;
         date[positions.month] = month;
         date[positions.year] = year;
 
-       const dayOfWeek = getDayOfWeek(fromDate, month, year);
-       const dayInfo = {
+       var dayOfWeek = getDayOfWeek(fromDate, month, year);
+       var dayInfo = {
             calendarDate: firstCall ? from : date.join(delimeter), 
             dayName: days.getInfo(dayOfWeek, 'name'),
             dayOfWeek: dayOfWeek,
@@ -905,7 +905,7 @@ const genMonthFromDate = function(from, to, month, year, delimeter) {
     @return
     @description
 */
-const getWeekNumber = function(date= '' | {}, year=0) {
+var getWeekNumber = function(date= '' | {}, year=0) {
 
     let curatedDate;
     if(date instanceof Date) {
@@ -917,8 +917,8 @@ const getWeekNumber = function(date= '' | {}, year=0) {
         return -1;
     }
 
-    const millisTillDate = (new Date('01/01/' + year) - curatedDate) / (1000 * 59 * 59 * 24);
-    const totalDaysToDate = Math.abs( millisTillDate );
+    var millisTillDate = (new Date('01/01/' + year) - curatedDate) / (1000 * 59 * 59 * 24);
+    var totalDaysToDate = Math.abs( millisTillDate );
 
     return Math.round(totalDaysToDate / 7);
 };
@@ -929,19 +929,19 @@ const getWeekNumber = function(date= '' | {}, year=0) {
     @return
     @description
 */
-const getDayOfWeek = function(day, month, year) {
-    const tDays = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
-    const nYear = year - (month < 3) ? 1 : 0;
-    const dayOfWeek = (nYear + nYear/4 - nYear/100 + nYear/400 + tDays[month-1] + day) % 7;
+var getDayOfWeek = function(day, month, year) {
+    var tDays = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+    var nYear = year - (month < 3) ? 1 : 0;
+    var dayOfWeek = (nYear + nYear/4 - nYear/100 + nYear/400 + tDays[month-1] + day) % 7;
     return Math.ceil(dayOfWeek);
 };
 
-const getDayOfWeekByDate = function(date='', format='') {
+var getDayOfWeekByDate = function(date='', format='') {
     return checkAndExecute(date, format, '', (sanitizedDate, sanitizedFormat) => {
-		console.log('Executed');
-        const allDateParts = getDatePart(sanitizedDate, sanitizedFormat, 'all', true);
-		console.log('Result: ', allDateParts);
-        const dayOfWeek = getDayOfWeek(allDateParts.day, allDateParts.month, allDateParts.year);
+		// console.log('Executed');
+        var allDateParts = getDatePart(sanitizedDate, sanitizedFormat, 'all', true);
+		// console.log('Result: ', allDateParts);
+        var dayOfWeek = getDayOfWeek(allDateParts.day, allDateParts.month, allDateParts.year);
 		
 		if(dayOfWeek) return dayOfWeek;
 		else throw Error('Invalid date provided'); 
@@ -957,12 +957,12 @@ const getDayOfWeekByDate = function(date='', format='') {
     @return
     @description
 */
-const isLeapYear = (year) => {
+var isLeapYear = (year) => {
 	if(isEmpty(year)) {
 		return false;
     }
 
-    const isLeap = (yearVal) => (yearVal / 4) % 1 == 0 ? (yearVal / 100) % 1 != 0 ? true : (yearVal / 400) % 1 == 0 ? true : false : false;
+    var isLeap = (yearVal) => (yearVal / 4) % 1 == 0 ? (yearVal / 100) % 1 != 0 ? true : (yearVal / 400) % 1 == 0 ? true : false : false;
     
     if (assertTypeOf(year, 'number')) {
         return isLeap(year);
@@ -985,7 +985,7 @@ const isLeapYear = (year) => {
     @return time string if found, otherwise empty string
     @description finds a time value within a specific string
 */
-const detectTime = (date='') => {
+var detectTime = (date='') => {
 	return checkAndExecuteSingleStringValue(date, '', (validDate) => {
 		let time;
         if(date.indexOf(',') !== -1) {
@@ -996,10 +996,10 @@ const detectTime = (date='') => {
 
             return time; 
         } else {
-            const matchedValue = validDate.indexOf(':');
+            var matchedValue = validDate.indexOf(':');
             if(matchedValue > -1) {
                 time = validDate.substring(matchedValue-2, validDate.length);
-                const occurances = time.split('').filter(val => val === ':').length;
+                var occurances = time.split('').filter(val => val === ':').length;
                 let missingIndexes = 2;
 
                 if(time.indexOf('.') !== -1) {
@@ -1019,26 +1019,26 @@ const detectTime = (date='') => {
     @return time value or empty string otherwise
     @description extracts time values: hour, minutes, etc... from a time specific string
 */
-const getTimeValue = (time='', option='', hasSeconds=false, parseToInt=false) => {
-    const defaultValue = parseToInt ? -1 : '';
+var getTimeValue = (time='', option='', hasSeconds=false, parseToInt=false) => {
+    var defaultValue = parseToInt ? -1 : '';
     return checkAndExecute(time, option, defaultValue, (time, option) => {
         switch(option) {
             case 'hour':
-                const hour = time.substring(0, 2);
+                var hour = time.substring(0, 2);
                 return asInt ? parseInt(hour) : hour;
             case 'minutes':
-                const minutes = time.substring(3, 5); 
+                var minutes = time.substring(3, 5); 
                 return asInt ? parseInt(minutes) : minutes;
             case 'seconds':
-                const seconds = time.substring(6, 8);
+                var seconds = time.substring(6, 8);
                 return hasSeconds ? (asInt ? parseInt(seconds) : seconds) : '';
             case 'all':
-                const timeValues = {
+                var timeValues = {
                     hour: time.substring(0, 2),
                     minutes: time.substring(3, 5)
                 };
                 if(hasSeconds) {
-                    const secondsAsString = time.substring(6, 8);
+                    var secondsAsString = time.substring(6, 8);
                     timeValues.seconds = parseToInt ? parseInt(secondsAsString) : secondsAsString;
                 }
                 if(parseToInt) {
@@ -1050,12 +1050,12 @@ const getTimeValue = (time='', option='', hasSeconds=false, parseToInt=false) =>
     });
 };
 
-const inferTimeFormat = (time='') => {
-    const timeParts = time.split(':');
-    const lastPart = timeParts[timeParts.length - 1];
+var inferTimeFormat = (time='') => {
+    var timeParts = time.split(':');
+    var lastPart = timeParts[timeParts.length - 1];
     if(lastPart.includes('.')) {
-       const parts = lastPart.split('.');
-       const lastIndex = timeParts.length - 1;
+       var parts = lastPart.split('.');
+       var lastIndex = timeParts.length - 1;
 
        timeParts[lastIndex] = parts[0];
        timeParts[lastIndex+1] = parts[1];
@@ -1088,20 +1088,20 @@ const inferTimeFormat = (time='') => {
     @return
     @description
 */
-const  isValidTime = (time='') => {
+var  isValidTime = (time='') => {
 
-    const timeChecker = (_time='', hasSeconds=false, hasMillis=false) => {
-        const hour   = timeParts.hour;
-        const minutes = timeParts.minutes;
+    var timeChecker = (_time='', hasSeconds=false, hasMillis=false) => {
+        var hour   = timeParts.hour;
+        var minutes = timeParts.minutes;
 
-        const check = (quantifier, isHour=false) => {
+        var check = (quantifier, isHour=false) => {
             return isHour ? (quantifier >= 0 && quantifier <= 24) : (quantifier >= 0 && quantifier <= 59); 
         };
         if( hasSeconds ) {
-            const seconds = _time[3];
+            var seconds = _time[3];
             return check(hour, true) && check(minutes, false) && check(seconds, false); 
         } else if(hasSeconds && hasMillis) {
-            const seconds = _time[3], millis = _time[4];
+            var seconds = _time[3], millis = _time[4];
             return check(hour, true) && check(minutes, false) && check(seconds, false) && check(millis, false);
         } else return check(hour, true) && check(minutes);
     };
@@ -1119,8 +1119,8 @@ const  isValidTime = (time='') => {
         _time = time.split(':').map(Number);
     }
 
-    const inferenceResult = inferTimeFormat(time);
-    const timeParts = getTimeValue(time, 'all', inferenceResult.hasSeconds, true);
+    var inferenceResult = inferTimeFormat(time);
+    var timeParts = getTimeValue(time, 'all', inferenceResult.hasSeconds, true);
 
     switch (inferenceResult.format) {
         case 'hh:mm:ss':
@@ -1135,7 +1135,7 @@ const  isValidTime = (time='') => {
 };
 
 
-const includesTime = (date) => {
+var includesTime = (date) => {
     if(isEmpty(date)) {
         return false;
     }
@@ -1144,7 +1144,7 @@ const includesTime = (date) => {
         return false;
     }
 
-    const dateArrayString = date.split(',');
+    var dateArrayString = date.split(',');
 
     return isValidTime(dateArrayString[1]);
 }
@@ -1164,11 +1164,11 @@ const includesTime = (date) => {
 */
 chronologic.prototype.getMonthObject = function(date='', format='') {
     return checkAndExecute(date, format, '', (date, format) => {
-        const month = getDatePart(date, format, 'month', true);
-        const dayOne = 1,
+        var month = getDatePart(date, format, 'month', true);
+        var dayOne = 1,
               endDay = this.getMonthLength(month); 
-        const year = getDatePart(date, format, 'year', true);
-        const positions = formats.findPosition(format, 'all');
+        var year = getDatePart(date, format, 'year', true);
+        var positions = formats.findPosition(format, 'all');
 
         return genMonthFromDate(dayOne, endDay, month, year, findDelimeter(format), positions); 
     });
@@ -1185,7 +1185,7 @@ chronologic.prototype.getMonthObject = function(date='', format='') {
 */
 // chronologic.prototype.reformat = function(newformat='', dateParts={}) {
 //     return checkAndExecute(this.date, format, '', (date, format) => {
-//         const formatParts = getDatePart(date, newformat, 'all', false);
+//         var formatParts = getDatePart(date, newformat, 'all', false);
 //         let dateContent;
 
 //         if(dateParts && Object.keys(dateParts).length > 0) {
@@ -1194,7 +1194,7 @@ chronologic.prototype.getMonthObject = function(date='', format='') {
 //             dateContent = getDatePart(this.date, this.format, 'all');
 //         }
 
-//         const positions = formats.findPositionPositions(format, 'all');
+//         var positions = formats.findPositionPositions(format, 'all');
 //         return replaceMutipleValues(formatParts, positions, dateParts);
 //         // return format.replace(formatParts.day, dateContent.day)
 //         //             .replace(formatParts.month, dateContent.month)
@@ -1212,10 +1212,10 @@ chronologic.prototype.getMonthObject = function(date='', format='') {
     @description 
 */
 // chronologic.prototype.timeLocaleToString = function(date='') {
-//     const time = detectTime(date);
-//     const inferencedResult = inferTimeFormat(time);
-//     const timeParts = getTimeValue(time, 'all', inferencedResult.hasSeconds, false);
-//     const newTimeString = `${timeParts.hour}:${timeParts.minutes}:${inferencedResults.hasSeconds ? timeParts.seconds : ''}`;
+//     var time = detectTime(date);
+//     var inferencedResult = inferTimeFormat(time);
+//     var timeParts = getTimeValue(time, 'all', inferencedResult.hasSeconds, false);
+//     var newTimeString = `${timeParts.hour}:${timeParts.minutes}:${inferencedResults.hasSeconds ? timeParts.seconds : ''}`;
 
 //     if(!isValidTime(newTimeString, inferencedResult.format)) {
 //         return '00:00:00';
@@ -1238,11 +1238,11 @@ chronologic.prototype.genFullYear = function(date='', format='') {
         year = getDatePart(this.date, this.format, 'year', true);
     }
 
-    const months = [];
-    const positions = formats.findPosition(format, 'all');
+    var months = [];
+    var positions = formats.findPosition(format, 'all');
     for(let iMonth = 1; iMonth <= 12; ++iMonth) {
-        const monthLength = this.getMonthLength(iMonth, year); 
-        const fullMonth = genMonthFromDate(1, monthLength, iMonth, year, positions);
+        var monthLength = this.getMonthLength(iMonth, year); 
+        var fullMonth = genMonthFromDate(1, monthLength, iMonth, year, positions);
         months.push(fullMonth);
     }
 
@@ -1277,14 +1277,14 @@ chronologic.prototype.genMonth = function(date, format) {
         month = getDatePart(this.date, this.format, 'month', true);
     }
 
-    const year = getDatePart(date, format, 'year', true);
-    const monthName = months.getInfo(month, 'fullName', year);
-    const time = { 
+    var year = getDatePart(date, format, 'year', true);
+    var monthName = months.getInfo(month, 'fullName', year);
+    var time = { 
         time: '00:00:00',
         format: 'hh:mm:ss' 
     };
     
-    const currentMonth = new Date.getMonth();
+    var currentMonth = new Date.getMonth();
     return {
         totalDays: this.getMonthLength(month, year),
         name: monthName,
@@ -1306,7 +1306,7 @@ chronologic.prototype.genMonth = function(date, format) {
     @return
     @description
 */
-const replaceMutipleValues = (values=[], positions={}, container) => { 
+var replaceMutipleValues = (values=[], positions={}, container) => { 
     let temp = container;
     Object.keys(positions).forEach( (option, index) => {
         temp = replaceValue(values[index], positions[option], temp, option);
@@ -1320,11 +1320,11 @@ const replaceMutipleValues = (values=[], positions={}, container) => {
     @return
     @description
 */
-const findIndexes = (format='', arrayOfOptions=[]) => {
+var findIndexes = (format='', arrayOfOptions=[]) => {
    return arrayOfOptions.map( (acceptedFormat) => {
-        const match = format.match(acceptedFormat.regex);
+        var match = format.match(acceptedFormat.regex);
         if(match) {
-            const stringValueFound = match.toLocaleString();
+            var stringValueFound = match.toLocaleString();
             return {
 				start: match.index,
             	end: (match.index+stringValueFound.length)
@@ -1338,9 +1338,9 @@ const findIndexes = (format='', arrayOfOptions=[]) => {
     @return
     @description
 */
-const findDelimeter = (format='') => {
+var findDelimeter = (format='') => {
     return checkAndExecuteSingleStringValue(format, '', (curatedFormat) => {
-        const regex = /[-, ,. /]/;
+        var regex = /[-, ,. /]/;
         return curatedFormat.match(regex).toString();
     });
 };
@@ -1351,7 +1351,7 @@ const findDelimeter = (format='') => {
     @description given two string values it checks for a blank element 
     throws callstack except 
     */
-   const checkAndExecuteSingleStringValue = (valueOne, defaultValue, callback) =>{
+   var checkAndExecuteSingleStringValue = (valueOne, defaultValue, callback) =>{
        if( !isEmpty(valueOne) ) {
            return callback(valueOne);
         } else {
@@ -1365,7 +1365,7 @@ const findDelimeter = (format='') => {
     @description given two string values it checks for a blank (i.e.: empty='', undefined, null)  
     throws callstack except 
 */
-const checkAndExecute = (valueOne, valueTwo, defaultValue, callback) =>{
+var checkAndExecute = (valueOne, valueTwo, defaultValue, callback) =>{
     if( !isEmpty(valueOne) && !isEmpty(valueTwo)) {
         return callback(valueOne, valueTwo);
     } else { 
@@ -1378,15 +1378,15 @@ const checkAndExecute = (valueOne, valueTwo, defaultValue, callback) =>{
     @return
     @description a general purpose function that checks a single digit string to see if is a valid character
 */
-const isChar = (digit) => (assertTypeOf(digit, 'string') && digit.length === 1) && (digit.toLowerCase() >= 'a' && digit.toLowerCase() <= 'z');
+var isChar = (digit) => (assertTypeOf(digit, 'string') && digit.length === 1) && (digit.toLowerCase() >= 'a' && digit.toLowerCase() <= 'z');
 
 /*
     @param
     @return
     @description a general purpose function that checks a single digit string to see if is a valid character
 */
-const isValidName = (stringValue) => {
-    for(const char in stringValue) {
+var isValidName = (stringValue) => {
+    for(var char in stringValue) {
         if(!isChar(char)) {
             return false;
         }
@@ -1399,12 +1399,12 @@ const isValidName = (stringValue) => {
     @return
     @description identifies a numeric value within a string
 */
-const stringIsNumeric = (stringValue) => {
+var stringIsNumeric = (stringValue) => {
     if(stringValue === undefined || stringValue === null || !assertTypeOf(stringValue, 'string') || stringValue === '') {
         return false;
     }
     for(let index = 0; index < stringValue.length; ++index) {
-        const char = stringValue[index];
+        var char = stringValue[index];
         if(isNaN(char) && !isChar(char)) { 
             return false;
         }
@@ -1417,14 +1417,14 @@ const stringIsNumeric = (stringValue) => {
     @return
     @description simple check for the type of a value
 */
-const assertTypeOf = (value, type='') => value && (value).constructor.name.toLowerCase() === (type).toLowerCase();
+var assertTypeOf = (value, type='') => value && (value).constructor.name.toLowerCase() === (type).toLowerCase();
 
 /*
     @param
     @return
     @description Checks of a string is either undefined or empty
 */
-const isEmpty = (value) => {
+var isEmpty = (value) => {
     if(!value || value == null) {
         return true;
     }
