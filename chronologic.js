@@ -1,4 +1,3 @@
-// Calendar object
 function chronologic(date='', format='', options={}) {
     
     let dateOnly;
@@ -9,9 +8,9 @@ function chronologic(date='', format='', options={}) {
         time = detectTime(dateArrayString[1])
     }
     
-    var day   = getDatePart(date, format, 'day', true);
-    var month = getDatePart(date, format, 'month', true);
-    var year  = getDatePart(date, format, 'year', true);
+    var day   = getDay(date, format);
+    var month = getMonth(date, format);
+    var year  = getYear(date, format);
 
     this.timeFormat = inferTimeFormat(time);
     this.day    = day;
@@ -19,50 +18,55 @@ function chronologic(date='', format='', options={}) {
     this.year   = year;
     this.date   = dateOnly;
 	this.time   = time;
-	this.format = format;
+    this.format = format;
+
+    var defaultFormat = 'dd/mm/yyyy';
     
-    var week = getWeekNumber(date, year);
+    var week = getWeekNumber(date, format, year);
 	this.week  = week;
-    
-	var actualDate = new Date();
+
+    var actualDate = new Date();
     var actualTime = actualDate.toLocaleTimeString();
-    
     var actualDateString = actualDate.toLocaleDateString();
-    var dayPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'day', true);
-    var monthPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'month', true);
-    var yearPart = getDatePart(actualDateString, 'dd/mm/yyyy', 'year', true);
-    
+
+    var dayPart = getDay(actualDateString, defaultFormat);
+    var monthPart = getMonth(actualDateString, defaultFormat);
+    var yearPart = getYear(actualDateString, defaultFormat);    
+    var nameOfCurrentDay = getWeekDayNameByDate(actualDateString, defaultFormat);
+
     this.currentDay  = {
-        name: days.getInfo(actualDate.getDay(), 'fullName'),
-        weekDay: getWeekDayName(dayPart, monthPart, yearPart),
+        name: nameOfCurrentDay,
+        weekDay: getDayOfWeek(dayPart, monthPart, yearPart),
         day: dayPart,
         timeSet: { 
             time: actualTime, 
             format: inferTimeFormat(actualTime) 
         },
-        week: getWeekNumber(actualDate, yearPart),
+        week: getWeekNumber(actualDate, defaultFormat, yearPart),
         year: yearPart,
         month: monthPart,
         fullDate: `${dayPart}/${ (monthPart > 9 ? monthPart : '0'+monthPart) }/${yearPart}`,
-        format: 'dd/MM/yyyy'
+        format: defaultFormat
     };
 
-    var lastDayDate = `01/12/${year}`;
-    var allDateParts = getDatePart(lastDayDate, format, 'all', true);
-    var lastDayDateDayOfWeek = getDayOfWeekByDate(lastDayDate, format);
+    var dateOfLastDayOfYear = `31/12/${year}`;
+    var nameOfLastDayOfYear = getWeekDayNameByDate(dateOfLastDayOfYear, defaultFormat);
+    var lastDayDatePart = getDay(dateOfLastDayOfYear, defaultFormat);
+    var lastMonthDatePart = getMonth(dateOfLastDayOfYear, defaultFormat);
+
     this.lastDayOfTheYear   = { 
-        name: getWeekDayName(lastDayDateDayOfWeek, 'fullName'),
-        weekDay: getWeekDayName(allDateParts.day, allDateParts.month, year),
+        name: nameOfLastDayOfYear,
+        weekDay: getDayOfWeek(lastDayDatePart, lastMonthDatePart, year),
         day: allDateParts.day,
         timeSet: { 
             time: '00:00:00', 
             format: inferTimeFormat(this.time) 
         },
-        week: getWeekNumber(lastDayDate, year),
+        week: getWeekNumber(dateOfLastDayOfYear, defaultFormat, year),
         year: year,
         month: allDateParts.month,
-        fullDate: `${allDateParts.day}/${ (allDateParts.month > 9 ? allDateParts.month : '0'+allDateParts.month) }/${year}`,
-        format: 'dd/MM/yyyy' 
+        fullDate: `${lastDayDatePart}/${ (lastMonthDatePart > 9 ? lastMonthDatePart : '0'+lastMonthDatePart) }/${year}`,
+        format: defaultFormat
     };
     
     this.weeksLeft       = 52 - week;
@@ -123,24 +127,24 @@ chronologic.prototype = {
     getCalendarYear: function() {
         return this.year;
     },
-    getDay: function(date='', format='', asInt=false) {
-        let day = getDatePart(date, format, 'day', asInt);
+    getDay: function(date='', format='') {
+        let day = getDay(date, format);
         if(isEmpty(day)) {
-            return getDatePart(this.date, this.format, 'day', asInt);
+            return getDay(this.date, this.format);
         }
         return day;
     },
-    getMonth: function(date='', format='', asInt=false) {
-        let month = getDatePart(date, format, 'month', asInt);
-        if(month === '') {
-            return getDatePart(this.date, this.format, 'month');
+    getMonth: function(date='', format='') {
+        let month = getMonth(date, format);
+        if(isEmpty(month)) {
+            return getMonth(this.date, this.format);
         }
         return month;
     },
-    getYear:  function(date='', format='', asInt=false) {
-        let year = getDatePart(date, format, 'year', asInt);
+    getYear:  function(date='', format='') {
+        let year = getYear(date, format);
         if(isEmpty(year)) {
-            return getDatePart(this.date, this.format, 'year');
+            return getYear(this.date, this.format);
         }
         return year;
     },
@@ -153,8 +157,13 @@ chronologic.prototype = {
     getLocationsInDateString: function(format) {
         return formats.findPosition(format, 'all');
     },
-    getWeekNumber: function(date= '' | {}) {
-        return getWeekNumber(date);
+    getWeekNumber: function(date= '' | {}, format = '') {
+        if(isEmpty(date) && isEmpty(format)) {
+            var year = getYear(this.date, this.format);
+            return getWeekNumber(this.date, this.format, year)
+        }
+        var year = getYear(date, format);
+        return getWeekNumber(date, format, year);
     },
     getDayOfWeek: function(day, month, year) {
         return getDayOfWeek(day, month, year);
@@ -171,7 +180,7 @@ chronologic.prototype = {
         switch(typeof year) {
             case 'number': return isLeapYear(year);
             case 'string':
-                if(!stringIsNumeric(year) || (year.length !== 2 || year.length != 4) ) {
+                if(!isNumeric(year) || (year.length !== 2 || year.length != 4) ) {
                     return false;
                 } 
                     return isLeapYear(parseInt(year));
@@ -204,18 +213,18 @@ chronologic.prototype = {
 
 var months = {
     info: [
-        { fullName: 'January',    abbrName: 'Jan', length: 31 },
-        { fullName: 'February',   abbrName: 'Feb', length: 28 },
-        { fullName: 'March',      abbrName: 'Mar', length: 31 },
-        { fullName: 'April',      abbrName: 'Apr', length: 30 },
-        { fullName: 'May',        abbrName: 'May', length: 31 },
-        { fullName: 'June',       abbrName: 'Jun', length: 30 },
-        { fullName: 'July',       abbrName: 'Jul', length: 31 },
-        { fullName: 'August',     abbrName: 'Aug', length: 31 },
-        { fullName: 'September',  abbrName: 'Sep', length: 30 },
-        { fullName: 'October',    abbrName: 'Oct', length: 31 },
-        { fullName: 'November',   abbrName: 'Nov', length: 30 },
-        { fullName: 'December',   abbrName: 'Dec', length: 31 }
+        { fullName: 'January',    abbreviatedName: 'Jan', length: 31 },
+        { fullName: 'February',   abbreviatedName: 'Feb', length: 28 },
+        { fullName: 'March',      abbreviatedName: 'Mar', length: 31 },
+        { fullName: 'April',      abbreviatedName: 'Apr', length: 30 },
+        { fullName: 'May',        abbreviatedName: 'May', length: 31 },
+        { fullName: 'June',       abbreviatedName: 'Jun', length: 30 },
+        { fullName: 'July',       abbreviatedName: 'Jul', length: 31 },
+        { fullName: 'August',     abbreviatedName: 'Aug', length: 31 },
+        { fullName: 'September',  abbreviatedName: 'Sep', length: 30 },
+        { fullName: 'October',    abbreviatedName: 'Oct', length: 31 },
+        { fullName: 'November',   abbreviatedName: 'Nov', length: 30 },
+        { fullName: 'December',   abbreviatedName: 'Dec', length: 31 }
     ],
     exists: function(month=-1|'') {
         if(!isNaN(month)) {
@@ -230,7 +239,7 @@ var months = {
             return month === validMonth.fullName.toLowerCase() || month === validMonth.abbrName.toLowerCase();
         }).length > 0;
     },
-    getInfo: function(month=-1|'', option=''|'name'|'abbr'|'length'|'all', year=0) {
+    getInfo: function(month=-1|'', option=''|'name'|'abbr'|'length', year=0) {
         if(!isNaN(month) && (month < 0 || month > 12 ) ) {
             return {};
         }
@@ -244,7 +253,7 @@ var months = {
                 case 'name':
                     return info.fullName;
                 case 'abbr':
-                    return info.abbrName;
+                    return info.abbreviatedName;
                 case 'length':
                     return info[option];
                 case 'all':
@@ -268,54 +277,53 @@ var days = {
         { fullName: 'Sunday',    abbrName: 'Sun' }
     ],
     // TODO: Review fetch function for name
-    getInfo: function(day=-1|'', option=''|'name'|'abbr'|'number'|'all') {
-        if(!isNaN(day) && day < 1 && day > 7) {
-            return '';
+    getInfo: function(day= 1 | '', option=''|'name'|'abbr'|'number') {
+    	console.log(day);
+		if(assertTypeOf(day, 'string') && isNumeric(day)) {
+			day = parseInt(day); 
+			day = day === 0 ? day : day - 1;
+        }
+
+		if(assertTypeOf(day, 'string') && !isNumeric(day)) {
+        	throw new Error('String contains an invalid numeric day value');
+        }
+
+		if(assertTypeOf(day, 'number')) {
+        	day = day - 1;
+		}
+		
+		if(isNaN(day) || (!isNaN(day) && day < 0 && day > 7)) {
+            throw new Error(`Day outside bounds: ${day}`);
         }
         
         var getByType = (day) => {
-            if(assertTypeOf(day, 'number')) {
-                if(day === 0) {
-                    return (this.info[day])[option];
-                }
-                return (this.info[day-1])[option];
-            }
-
-            if(assertTypeOf(day, 'string')) {
-                var lowerCaseDay = day.toLowerCase();
-                let result = -1;
-                this.info.forEach( (dayInfo, index) => {
-                    if(dayInfo.fullName === lowerCaseDay || dayInfo.abbrName === lowerCaseDay) {
-                        switch(option) {
-                            case 'name':
-                                result = dayInfo.fullName;
-                                break;
-                            case 'abbr':
-                                result = dayInfo.abbrName;
-                                break;
-                            case 'number':
-                                result = index+1;
-                                break;
-                            // case 'all':
-                            //     var all = dayInfo;
-                            //     all['number'] = index+1;
-                                
-                            //     return all;
-                            default:
-                                console.warn(`Unknown option ${option}`);
-                                break;
-                        }
+      		let result = null;
+            this.info.forEach( (dayInfo, index) => {
+				if(index === day) {
+                    switch(option) {
+                        case 'name':
+                            result = dayInfo.fullName;
+                            break;
+                        case 'abbr':
+                            result = dayInfo.abbrName;
+                            break;
+                        case 'number':
+                            result = index+1;
+                            break;
+                        default:
+                            console.warn(`Unknown option ${option}`);
+                            break;
                     }
-                });
-                return result;
-            }
+                }
+            });
+            return result;
         }
 
         return getByType(day);
     },
     exists:function(day=-1|'') {
-        if(!isNaN(day)) {
-            day = Number(day);
+		if(!isNaN(day)) {
+			day = Number(day);
             return day >= 1 && day <= 7;
         }
         
@@ -324,7 +332,7 @@ var days = {
         }
 
         day = day.toLowerCase();
-        return this.dayInfo.filter( (validDay) => {
+        return this.info.filter( (validDay) => {
             return day === validDay.fullName.toLowerCase() || day === validDay.abbrName.toLowerCase();
         }).length > 0;
     }
@@ -424,7 +432,7 @@ var isValidMonth = (month) => {
     let validMonth;
     if(assertTypeOf(month, 'number')) {
         validMonth = month;
-    } else if(assertTypeOf(month, 'string') && stringIsNumeric(month)) {
+    } else if(assertTypeOf(month, 'string') && isNumeric(month)) {
         validMonth = parseInt(month);
     }
 
@@ -449,7 +457,7 @@ var isValidMonth = (month) => {
 */
 var isValidYear = (year) => {
     let validYear;
-	if(assertTypeOf(year, 'string') && stringIsNumeric(year)) {
+	if(assertTypeOf(year, 'string') && isNumeric(year)) {
         validYear = parseInt(year);
     } else if(assertTypeOf(year, 'number')) {
         validYear = year;
@@ -499,15 +507,15 @@ var isAbbreviatedOrFullName = (part) => {
 
 var isDay = (part) => {
     var isAbbr = isAbbreviatedOrFullName(part);
-    return (stringIsNumeric(part) && isValidDay(part)) || (isAbbr.isFullDayName || isAbbr.isAbbrDay);
+    return (isNumeric(part) && isValidDay(part)) || (isAbbr.isFullDayName || isAbbr.isAbbrDay);
 };
 
 var isMonth = (part) => {
     var isAbbr = isAbbreviatedOrFullName(part);
-    return (stringIsNumeric(part) && isValidMonth(part)) || (isAbbr.isFullMonthName || isAbbr.isAbbrMonth);
+    return (isNumeric(part) && isValidMonth(part)) || (isAbbr.isFullMonthName || isAbbr.isAbbrMonth);
 };
 
-var isYear = (part) => stringIsNumeric(part) && isValidYear(part);
+var isYear = (part) => isNumeric(part) && isValidYear(part);
 
 // Data Extraction
 // ============================================================
@@ -515,6 +523,22 @@ var isYear = (part) => stringIsNumeric(part) && isValidYear(part);
 
 // Date manipulation methods
 // ============================================================
+
+var getDay = (date='', format='') => getDatePart(date, format, 'day', true);
+
+/*
+    @param
+    @return
+    @description
+*/
+var getMonth = (date='', format='') => getDatePart(date, format, 'month', true);
+
+/*
+    @param
+    @return
+    @description
+*/
+var getYear = (date='', format='') => getDatePart(date, format, 'year', true);
 
 /*
     @param
@@ -531,66 +555,82 @@ var fromNumericDayGetFullDate = (day=-1, currentDate='', format='') => {
     return day !== -1 ? `${day}${delimeter}${month}${delimeter}${year}` : '';
 };
 
+/*
+    @param
+    @return
+    @description
+*/
+
+var dateToUTCDateString = (date = '', format='') => { 
+	return checkAndExecuteSingleStringValue(date, '', (checkedDate) => {
+		var day = getDay(checkedDate, format);
+		var month = getMonth(checkedDate, format);
+		var year = getYear(checkedDate, format);
+
+		return `${month}-${day}-${year}`;
+    })
+}
+
 
 /*
     @param
     @return
     @description Not used yet but will be used for the validation of time object representaiton
 */
-// var inferStandardFormat = (part='', format='') => {
-//     let dayAdded = false, monthAdded = false, yearAdded = false;
-//     var datePart = Number(part);
-//     var abbreviated = (part='', delimeter='', addDelimeter=false) => {
-//         if(part.length == 3) {
-//             var formatType = isAbbreviatedOrFullName(part);
-//             if(formatType.isAbbrDay) {
-//                 format += `DDD${addDelimeter ? delimeter : ''}`;
-//                 dayAdded = !dayAdded;
-//             } 
+var inferStandardFormat = (part='', format='') => {
+    let dayAdded = false, monthAdded = false, yearAdded = false;
+    var datePart = Number(part);
+    var abbreviated = (part='', delimeter='', addDelimeter=false) => {
+        if(part.length == 3) {
+            var formatType = isAbbreviatedOrFullName(part);
+            if(formatType.isAbbrDay) {
+                format += `DDD${addDelimeter ? delimeter : ''}`;
+                dayAdded = !dayAdded;
+            } 
     
-//             if(formatType.isAbbrMonth) {
-//                 format +=`MMM${addDelimeter ? delimeter : ''}`;
-//                 monthAdded = !monthAdded;
-//             }
-//         }
-//     };
-//     if(i < dateArrayString.length - 1) {
+            if(formatType.isAbbrMonth) {
+                format +=`MMM${addDelimeter ? delimeter : ''}`;
+                monthAdded = !monthAdded;
+            }
+        }
+    };
+    if(i < dateArrayString.length - 1) {
         
-//         abbreviated(part, format, delimeter, true);
+        abbreviated(part, format, delimeter, true);
 
-//         if(part.length === 4 && !yearAdded) {
-//             format += `yyyy${delimeter}`;
-//             yearAdded = !yearAdded;
-//         }
+        if(part.length === 4 && !yearAdded) {
+            format += `yyyy${delimeter}`;
+            yearAdded = !yearAdded;
+        }
 
-//         if(!isNaN(datePart) && (datePart >= 1 && datePart <= 31) && !dayAdded) {
-//             format += `dd${delimeter}`;
-//             dayAdded = !dayAdded;
-//         }
+        if(!isNaN(datePart) && (datePart >= 1 && datePart <= 31) && !dayAdded) {
+            format += `dd${delimeter}`;
+            dayAdded = !dayAdded;
+        }
 
-//         if(!isNaN(datePart) && (datePart >= 1 && datePart <= 12) && !monthAdded) {
-//             format += `mm${delimeter}`;
-//             monthAdded = !monthAdded; 
-//         }
-//     } else {
-//         abbreviated(part, format, delimeter, false);
+        if(!isNaN(datePart) && (datePart >= 1 && datePart <= 12) && !monthAdded) {
+            format += `mm${delimeter}`;
+            monthAdded = !monthAdded; 
+        }
+    } else {
+        abbreviated(part, format, delimeter, false);
 
-//         if(part.length === 4 && !yearAdded) {
-//             format += `yyyy`;
-//             yearAdded = !yearAdded;
-//         }
+        if(part.length === 4 && !yearAdded) {
+            format += `yyyy`;
+            yearAdded = !yearAdded;
+        }
 
-//         if(!isNaN(datePart) && (datePart >= 1 && datePart <= 31) && !dayAdded) {
-//             format += `dd`;
-//             dayAdded = !dayAdded;
-//         }
+        if(!isNaN(datePart) && (datePart >= 1 && datePart <= 31) && !dayAdded) {
+            format += `dd`;
+            dayAdded = !dayAdded;
+        }
 
-//         if(!isNaN(datePart) && (datePart >= 1 && datePart <= 12) && !monthAdded) {
-//             format += `mm`;
-//             monthAdded = !monthAdded; 
-//         }
-//     }
-// };
+        if(!isNaN(datePart) && (datePart >= 1 && datePart <= 12) && !monthAdded) {
+            format += `mm`;
+            monthAdded = !monthAdded; 
+        }
+    }
+};
 
 // TODO: comple date inferece functions
 // var inferFullDateFormat = (part='', format='') => {
@@ -708,6 +748,17 @@ var getFormat = (value) => {
 */
 var getWeekDayName = (day, month, year) => {
     var dayOfWeek = getDayOfWeek(day, month, year);
+    return days.getInfo(dayOfWeek, 'name');
+};
+
+/*
+    @param
+    @return
+    @description
+*/
+var getWeekDayNameByDate = (date, format) => {
+    var dateParts = getDatePart(date, format, 'name', true);
+    var dayOfWeek = getDayOfWeek(dateParts.day, dateParts.month, dateParts.year);
     return days.getInfo(dayOfWeek, 'name');
 };
 
@@ -858,8 +909,9 @@ var genMonthFromDate = function(from, to, month, year, delimeter) {
 	var fromDate = new Date(from);
 	var toDate = new Date(to);
 	
-	let firstCall = true;
-    while(fromDate != toDate) {
+    let firstCall = true;
+    let format = 'dd/mm/yyyy';
+    while(fromDate !== toDate) {
         let date = [];
         // TODO: test this section, using an array might not be a viable solution to concatenate the date value into one
         // var replaceValue = (positions, date, value) => date.replace(date.substring(positions.start, positions.end), value);
@@ -869,13 +921,14 @@ var genMonthFromDate = function(from, to, month, year, delimeter) {
         date[positions.year] = year;
 
        var dayOfWeek = getDayOfWeek(fromDate, month, year);
+       var fromDateString = fromDate.toLocaleDateString();
        var dayInfo = {
             calendarDate: firstCall ? from : date.join(delimeter), 
             dayName: days.getInfo(dayOfWeek, 'name'),
             dayOfWeek: dayOfWeek,
-            monthDay: fromDate.toLocaleDateString(),
+            monthDay: fromDateString,
             timeSet: { time: '00:00:00', format: '' },
-            week: getWeekNumber(date.toLocaleDateString())
+            week: getWeekNumber(fromDateString, format, fromDate.getFullYear())
         };
         fullMonth.push(dayInfo);
         if(fromDate == toDate) {
@@ -884,14 +937,15 @@ var genMonthFromDate = function(from, to, month, year, delimeter) {
 
 		fromDate++;        
     }
-	
+    
+    var fromDateString = fromDate.toLocaleDateString();
 	fullMonth.push({
         calendarDate: to, 
         dayName: days.getInfo(dayOfWeek, 'name'),
         dayOfWeek: dayOfWeek,
-        monthDay: fromDate.toLocaleDateString(),
+        monthDay: fromDateString,
         timeSet: { time: '00:00:00', format: '' },
-        week: getWeekNumber(date.toLocaleDateString())
+        week: getWeekNumber(fromDateString, format, fromDate.getFullYear())
     });
 	
     return fullMonth;
@@ -905,21 +959,24 @@ var genMonthFromDate = function(from, to, month, year, delimeter) {
     @return
     @description
 */
-var getWeekNumber = function(date= '' | {}, year=0) {
+var getWeekNumber = function(date= '' | Date, format='', year=0) {
 
     let curatedDate;
     if(date instanceof Date) {
         curatedDate = date;
     } else if(assertTypeOf(date, 'string')) {
+		date = dateToUTCDateString(date, format);
         curatedDate = new Date(date);
     } else {
         console.warn('Invalid date type as argument');
         return -1;
     }
-
-    var millisTillDate = (new Date('01/01/' + year) - curatedDate) / (1000 * 59 * 59 * 24);
+	
+	var firstDayOfYear = new Date('01/01/' + year);
+    
+	var millisTillDate = (firstDayOfYear - curatedDate) / (1000 * 59 * 59 * 24);
     var totalDaysToDate = Math.abs( millisTillDate );
-
+	
     return Math.round(totalDaysToDate / 7);
 };
 
@@ -968,7 +1025,7 @@ var isLeapYear = (year) => {
         return isLeap(year);
     }
 
-    if(assertTypeOf(year, 'string') &&  stringIsNumeric(year)) {
+    if(assertTypeOf(year, 'string') &&  isNumeric(year)) {
         year = parseInt(year);
         return isLeap(year);
     }
@@ -1399,23 +1456,12 @@ var isValidName = (stringValue) => {
     @return
     @description identifies a numeric value within a string
 */
-var stringIsNumeric = (stringValue) => {
-    if(stringValue === undefined || stringValue === null || !assertTypeOf(stringValue, 'string') || stringValue === '') {
-        return false;
-    }
-    for(let index = 0; index < stringValue.length; ++index) {
-        var char = stringValue[index];
-        if(isNaN(char) && !isChar(char)) { 
-            return false;
-        }
-    }
-    return true;
-};
-
+var isNumeric = (value = 0 | '') => (value !== undefined || value !== null || value !== '') && !isNaN(value);
+  
 /*
     @param
     @return
-    @description simple check for the type of a value
+  	@description simple check for the type of a value
 */
 var assertTypeOf = (value, type='') => value && (value).constructor.name.toLowerCase() === (type).toLowerCase();
 
