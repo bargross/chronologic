@@ -1,36 +1,31 @@
 {
   "name": "chronologic",
-  "author": "1.0.0",
-  "description": "# Description",
-  "homepage": "https://github.com/bargross/chronologic#readme",
-  "license": "MIT",
-  "private": false,
-  "scripts": {
-    "start": "",
-    "unit": "",
-    "test": "",
-    "lint": "",
-    "build": ""
+  "version": "1.0.0",
+  "description": "date time parser",
+  "main": "chronologic.js",
+  "directories": {
+    "test": "test"
   },
-  "keywords": [],
+  "scripts": {
+    "test": "unit-test"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bargross/chronologic.git"
   },
-  "main": "chronologic.js",
-  "dependencies": {
-    "jshint": "^2.10.2"
-  },
-  "devDependencies": {
-    "eslint": "^6.6.0"
-  },
-  "engines": {},
-  "browserlist": {},
+  "keywords": [
+    "js",
+    "date",
+    "parser",
+    "ES6+"
+  ],
+  "author": "Leo M.",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/bargross/chronologic/issues"
   },
-  "version": "1.0.0",
-  "directories": {
-    "test": "test"
+  "homepage": "https://github.com/bargross/chronologic#readme",
+  "dependencies": {
+    "jasmine": "^3.5.0"
   }
 }
