@@ -8,7 +8,7 @@ import { generateMonthFromDate } from './chronologic/date/generator';
 import { checkAndExecute, isNumeric } from './chronologic/helper/helper';
 import { isLeapYear } from './chronologic/date/validators';
 
-function chronologic(date='', format='', options={}) {
+export function chronologic(date='', format='', options={}) {
     
     let dateOnly;
     let time;
@@ -218,11 +218,4 @@ chronologic.prototype = {
     includesTime: function(date) {
         return includesTime(date);
     }
-};
-
-
-// EXPORT
-
-module.exports = {
-    chronologic: chronologic
 };
