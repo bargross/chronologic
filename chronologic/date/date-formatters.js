@@ -1,5 +1,5 @@
 import { isEmpty } from "../helper/helper";
-import { getDay, getMonth, getYear } from "./splitters";
+import { getDay, getMonth, getYear } from "./date-element-getters";
 
 
 /*

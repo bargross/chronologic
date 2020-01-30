@@ -1,18 +1,19 @@
 import { isNumeric, isEmpty, assertTypeOf } from "../helper/helper";
+import { isValidMonth, isValidYear } from "../date/daate-element-validators";
 
 export const months = [
-    { fullName: 'January',    abbreviatedName: 'Jan', length: 31 },
-    { fullName: 'February',   abbreviatedName: 'Feb', length: 28 },
-    { fullName: 'March',      abbreviatedName: 'Mar', length: 31 },
-    { fullName: 'April',      abbreviatedName: 'Apr', length: 30 },
-    { fullName: 'May',        abbreviatedName: 'May', length: 31 },
-    { fullName: 'June',       abbreviatedName: 'Jun', length: 30 },
-    { fullName: 'July',       abbreviatedName: 'Jul', length: 31 },
-    { fullName: 'August',     abbreviatedName: 'Aug', length: 31 },
-    { fullName: 'September',  abbreviatedName: 'Sep', length: 30 },
-    { fullName: 'October',    abbreviatedName: 'Oct', length: 31 },
-    { fullName: 'November',   abbreviatedName: 'Nov', length: 30 },
-    { fullName: 'December',   abbreviatedName: 'Dec', length: 31 }
+    { fullName: 'January',    abbreviatedName: 'Jan', length: 31, index: 1 },
+    { fullName: 'February',   abbreviatedName: 'Feb', length: 28, index: 2 },
+    { fullName: 'March',      abbreviatedName: 'Mar', length: 31, index: 3 },
+    { fullName: 'April',      abbreviatedName: 'Apr', length: 30, index: 4 },
+    { fullName: 'May',        abbreviatedName: 'May', length: 31, index: 5 },
+    { fullName: 'June',       abbreviatedName: 'Jun', length: 30, index: 6 },
+    { fullName: 'July',       abbreviatedName: 'Jul', length: 31, index: 7 },
+    { fullName: 'August',     abbreviatedName: 'Aug', length: 31, index: 8 },
+    { fullName: 'September',  abbreviatedName: 'Sep', length: 30, index: 9 },
+    { fullName: 'October',    abbreviatedName: 'Oct', length: 31, index: 10 },
+    { fullName: 'November',   abbreviatedName: 'Nov', length: 30, index: 11 },
+    { fullName: 'December',   abbreviatedName: 'Dec', length: 31, index: 12 }
 ];
 
 
@@ -21,24 +22,34 @@ export const getMonthInfo = (month=-1|'', option=''|'name'|'abbr'|'length', year
         return {};
     }
 
-    if(month === 2 && year > 0 && isLeapYear(year)) {
-        info.length = info.length + 1;
+    const searchResult = months.filter( (monthInfo) => monthInfo.index === month);
+    let monthInfo = null;
+    
+    if(searchResult.length > 0) {
+        monthInfo = searchResult[0];
+    }
+
+    // needs to be a specific month/s?
+    if(isValidMonth(month) && isValidYear(year) && isLeapYear(year)) { 
+        monthInfo.length = monthInfo.length + 1; 
     }
 
     if(option && !isEmpty(option)) {
         switch(option) {
             case 'name':
-                return months.fullName;
+                return monthInfo.fullName;
             case 'abbr':
-                return months.abbreviatedName;
+                return monthInfo.abbreviatedName;
             case 'length':
-                return months[option];
+                return monthInfo[option];
             case 'all':
-                return months;
+                return monthInfo;
             default: 
                 return {};
         }
     }
+
+    return null;
 }
 
 export const monthExists = (month=-1|'') => {

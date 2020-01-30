@@ -1,12 +1,12 @@
-import { getMonthLength, getDay, getMonth, getYear } from './chronologic/date/splitters';
+import { getMonthLength, getDay, getMonth, getYear } from './chronologic/date/date-element-getters';
 import { detectTime, includesTime } from './chronologic/time/time-detect';
 import { inferTimeFormat, isValidTime } from './chronologic/time/time';
-import { getWeekNumber, getWeekDayNameByDate, getDayOfWeek } from './chronologic/date/finders'
+import { getWeekNumber, getWeekDayNameByDate, getDayOfWeek } from './chronologic/date/date-element-finders'
 import { getMonthInfo } from './chronologic/maps/month';
 import { findPosition } from './chronologic/maps/format';
-import { generateMonthFromDate } from './chronologic/date/generator';
+import { generateMonthFromDate } from './chronologic/date/calendar-generators';
 import { checkAndExecute, isNumeric } from './chronologic/helper/helper';
-import { isLeapYear } from './chronologic/date/validators';
+import { isLeapYear } from './chronologic/date/daate-element-validators';
 
 export function chronologic(date='', format='', options={}) {
     

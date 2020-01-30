@@ -1,8 +1,8 @@
 import { formats, findPosition,  } from "../maps/format";
-import { getDatePart, getMonthLength, getMonth } from "./splitters";
+import { getDatePart, getMonthLength, getMonth } from "./date-element-getters";
 import { getMonthInfo } from "../maps/month";
 import { findDelimiter, checkAndExecute } from "../helper/helper";
-import { getDayOfWeek, getWeekNumber } from "./finders";
+import { getDayOfWeek, getWeekNumber } from "./date-element-finders";
 import { getDayInfo } from '../maps/day';
 
 //

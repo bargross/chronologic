@@ -3,7 +3,23 @@
     @return
     @description
 */
-export const replaceMultipleValues = (values=[], positions={}, container) => { 
+export const replaceMultipleValues = (values=[], positions={}, container) => {
+    if(isEmpty(values)) {
+        throw new Error('No [values] parameter provided');
+    }
+
+    if(isEmpty(positions)) {
+        throw new Error('No [positions] parameter provided');
+    }
+
+    if(isEmpty(container)) {
+        throw new Error('No [container] parameter provided');
+    }
+
+    if(isValidPositionObject(positions)) {
+        throw new Error('Invalid [positions] parameter provided');
+    }
+
     let temp = container;
     Object.keys(positions).forEach( (option, index) => {
         temp = replaceValue(values[index], positions[option], temp, option);
@@ -11,6 +27,34 @@ export const replaceMultipleValues = (values=[], positions={}, container) => {
 
     return temp;
 };
+
+/**
+  
+*/
+export const isValidPositionObject = (positions) => {
+    
+    if(isEmpty(position)) {
+        throw new Error('No [positions] parameter provided');
+    }
+    
+    var hasAllDateElements = positions.hasOwnProperty('day')
+        && positions.hasOwnProperty('month')
+        && positions.hasOwnProperty('year');
+
+    var hasPositionsOnly = (position) => {
+        return position.hasOwnProperty('start')
+            && position.hasOwnProperty('end');
+    }
+
+    if(hasAllDateElements) {
+        return Object.keys(position).filter( (key) => {
+            return hasPositionsOnly(position[key]);
+        }).length === 3;
+    }
+
+    return hasPositionsOnly(position);
+};
+
 
 /*
     @param
