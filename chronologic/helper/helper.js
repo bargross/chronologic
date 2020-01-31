@@ -119,7 +119,9 @@ export const checkAndExecute = (valueOne, valueTwo, defaultValue, callback) =>{
     @return
     @description a general purpose function that checks a single digit string to see if is a valid character
 */
-export const isChar = (digit) => (assertTypeOf(digit, 'string') && digit.length === 1) && (digit.toLowerCase() >= 'a' && digit.toLowerCase() <= 'z');
+export const isChar = (digit) => {
+    return (assertTypeOf(digit, 'string') && digit.length === 1) && (digit.toLowerCase() >= 'a' && digit.toLowerCase() <= 'z');
+}
 
 /*
     @param
@@ -140,14 +142,18 @@ export const isValidName = (stringValue) => {
     @return
     @description identifies a numeric value within a string
 */
-export const isNumeric = (value = 0 | '') => (value !== undefined || value !== null || value !== '') && !isNaN(value);
-  
+export const isNumeric = (value = 0 | '') => {
+    return (value !== undefined || value !== null || value !== '') && !isNaN(value);
+} 
+
 /*
     @param
     @return
   	@description simple check for the type of a value
 */
-export const assertTypeOf = (value, type='') => value && (value).constructor.name.toLowerCase() === (type).toLowerCase();
+export const assertTypeOf = (value, type='') => {
+    return value && (value).constructor.name.toLowerCase() === (type).toLowerCase();
+}
 
 /*
     @param

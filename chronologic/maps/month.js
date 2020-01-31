@@ -1,5 +1,5 @@
 import { isNumeric, isEmpty, assertTypeOf } from "../helper/helper";
-import { isValidMonth, isValidYear } from "../date/daate-element-validators";
+import { isValidMonth, isValidYear } from "../date/validator";
 
 export const months = [
     { fullName: 'January',    abbreviatedName: 'Jan', length: 31, index: 1 },

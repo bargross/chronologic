@@ -1,28 +1,37 @@
-import { getMonthLength, getDay, getMonth, getYear } from './chronologic/date/date-element-getters';
-import { detectTime, includesTime } from './chronologic/time/time-detect';
-import { inferTimeFormat, isValidTime } from './chronologic/time/time';
-import { getWeekNumber, getWeekDayNameByDate, getDayOfWeek } from './chronologic/date/date-element-finders'
+import { getMonthLength, getDay, getMonth, getYear } from './chronologic/date/element-extractor';
+import { TimeDetector } from './chronologic/time/time-detector';
+import { WeekElementGenerator } from './chronologic/date/week-element-generator'
 import { getMonthInfo } from './chronologic/maps/month';
 import { findPosition } from './chronologic/maps/format';
-import { generateMonthFromDate } from './chronologic/date/calendar-generators';
-import { checkAndExecute, isNumeric } from './chronologic/helper/helper';
-import { isLeapYear } from './chronologic/date/daate-element-validators';
+import { Generator } from './chronologic/date/calendar-generator';
+import { checkAndExecute, isNumeric, isEmpty } from './chronologic/helper/helper';
+import { Validator } from './chronologic/date/validator';
+import { Formatter } from './chronologic/date/formatter';
+import { ElementExtractor } from './chronologic/date/element-extractor';
 
 export function chronologic(date='', format='', options={}) {
     
+    if(isEmpty(date)) {
+        throw new Error('Invalid date parameter provided');
+    }
+
+    if(isEmpty(format)) {
+        throw new Error('Invalid date parameter provided');
+    }
+
     let dateOnly;
     let time;
-    if(includesTime(date)) {
+    if(TimeDetector.includesTime(date)) {
         var dateArrayString = date.split(',');
         dateOnly = dateArrayString[0];
-        time = detectTime(dateArrayString[1])
+        time = TimeDetector.detectTime(dateArrayString[1])
     }
     
-    var day   = getDay(date, format);
-    var month = getMonth(date, format);
-    var year  = getYear(date, format);
+    var day   = ElementExtractor.getDay(date, format);
+    var month = ElementExtractor.getMonth(date, format);
+    var year  = ElementExtractor.getYear(date, format);
 
-    this.timeFormat = inferTimeFormat(time);
+    this.timeFormat = Formatter.inferTimeFormat(time);
     this.day    = day;
     this.month  = month;
     this.year   = year;
@@ -32,27 +41,27 @@ export function chronologic(date='', format='', options={}) {
 
     var defaultFormat = 'dd/mm/yyyy';
     
-    var week = getWeekNumber(date, format, year);
+    var week = WeekElementGenerator.findWeekNumber(date, format, year);
 	this.week  = week;
 
     var actualDate = new Date();
     var actualTime = actualDate.toLocaleTimeString();
     var actualDateString = actualDate.toLocaleDateString();
 
-    var dayPart = getDay(actualDateString, defaultFormat);
-    var monthPart = getMonth(actualDateString, defaultFormat);
-    var yearPart = getYear(actualDateString, defaultFormat);    
-    var nameOfCurrentDay = getWeekDayNameByDate(actualDateString, defaultFormat);
+    var dayPart = ElementExtractor.getDay(actualDateString, defaultFormat);
+    var monthPart = ElementExtractor.getMonth(actualDateString, defaultFormat);
+    var yearPart = ElementExtractor.getYear(actualDateString, defaultFormat);    
+    var nameOfCurrentDay = WeekElementGenerator.findWeekDayNameByDate(actualDateString, defaultFormat);
 
     this.currentDay  = {
         name: nameOfCurrentDay,
-        weekDay: getDayOfWeek(dayPart, monthPart, yearPart),
+        weekDay: WeekElementGenerator.findDayOfWeek(dayPart, monthPart, yearPart),
         day: dayPart,
         timeSet: { 
             time: actualTime, 
-            format: inferTimeFormat(actualTime) 
+            format: Formatter.inferTimeFormat(actualTime) 
         },
-        week: getWeekNumber(actualDate, defaultFormat, yearPart),
+        week: WeekElementGenerator.findWeekNumber(actualDate, defaultFormat, yearPart),
         year: yearPart,
         month: monthPart,
         fullDate: `${dayPart}/${ (monthPart > 9 ? monthPart : '0'+monthPart) }/${yearPart}`,
@@ -60,19 +69,19 @@ export function chronologic(date='', format='', options={}) {
     };
 
     var dateOfLastDayOfYear = `31/12/${year}`;
-    var nameOfLastDayOfYear = getWeekDayNameByDate(dateOfLastDayOfYear, defaultFormat);
-    var lastDayDatePart = getDay(dateOfLastDayOfYear, defaultFormat);
-    var lastMonthDatePart = getMonth(dateOfLastDayOfYear, defaultFormat);
+    var nameOfLastDayOfYear = WeekElementGenerator.findWeekDayNameByDate(dateOfLastDayOfYear, defaultFormat);
+    var lastDayDatePart = ElementExtractor.getDay(dateOfLastDayOfYear, defaultFormat);
+    var lastMonthDatePart = ElementExtractor.getMonth(dateOfLastDayOfYear, defaultFormat);
 
     this.lastDayOfTheYear   = { 
         name: nameOfLastDayOfYear,
-        weekDay: getDayOfWeek(lastDayDatePart, lastMonthDatePart, year),
+        weekDay: WeekElementGenerator.findDayOfWeek(lastDayDatePart, lastMonthDatePart, year),
         day: allDateParts.day,
         timeSet: { 
             time: '00:00:00', 
-            format: inferTimeFormat(this.time) 
+            format: Formatter.inferTimeFormat(this.time) 
         },
-        week: getWeekNumber(dateOfLastDayOfYear, defaultFormat, year),
+        week: WeekElementGenerator.findWeekNumber(dateOfLastDayOfYear, defaultFormat, year),
         year: year,
         month: allDateParts.month,
         fullDate: `${lastDayDatePart}/${ (lastMonthDatePart > 9 ? lastMonthDatePart : '0'+lastMonthDatePart) }/${year}`,
@@ -83,26 +92,26 @@ export function chronologic(date='', format='', options={}) {
     this.currentWeek     = week;
     this.currentMonth    = month;
     this.totalMonthsLeft = 12 - actualDate.getMonth();
-    this.isLeapYear      = isLeapYear(year);
+    this.isLeapYear      = Validator.isLeapYear(year);
     this.isCurrentYear   = year == actualDate.getFullYear();
     this.options         = options;
 }
 
 chronologic.prototype = {
     detectTime: function(date='') {
-        return detectTime(date);
+        return TimeDetector.detectTime(date);
     },
     getTimeFormat: function(time='') {
-        if(isValidTime(time)) {
-            return inferTimeFormat(time);
+        if(Validator.isValidTime(time)) {
+            return Formatter.inferTimeFormat(time);
         } 
         return '';
     },
     genMonthFromDate: function(date='', format='') {
-        var dateParts = getDatePart(date, format, 'all', true);
+        var dateParts = ElementExtractor.getDatePart(date, format, 'all', true);
         var monthInfo = getMonthInfo(dateParts.month, 'all', dateParts.year);
         var positions = findPosition(format, 'all');
-        return generateMonthFromDate(1, monthInfo.length, dateParts.month, dateParts.year, positions);
+        return Generator.generateMonthFromDate(1, monthInfo.length, dateParts.month, dateParts.year, positions);
     },
 
     // setters
@@ -117,8 +126,8 @@ chronologic.prototype = {
 
     getMonthCalendarName: function(date='', format='') {
         var result = checkAndExecute(date, format, '', (date, format) => {
-            var month = getMonth(date, format);
-            var year = getYear(date, format);
+            var month = ElementExtractor.getMonth(date, format);
+            var year = ElementExtractor.getYear(date, format);
             return getMonthInfo(month, 'name', year);
         });
 
@@ -138,26 +147,26 @@ chronologic.prototype = {
         return this.year;
     },
     getDay: function(date='', format='') {
-        let day = getDay(date, format);
+        let day = ElementExtractor.getDay(date, format);
         if(isEmpty(day)) {
-            return getDay(this.date, this.format);
+            return ElementExtractor.getDay(this.date, this.format);
         }
         return day;
     },
     getMonth: function(date='', format='') {
-        let month = getMonth(date, format);
+        let month = ElementExtractor.getMonth(date, format);
         
         if(isEmpty(month)) {
-            return getMonth(this.date, this.format);
+            return ElementExtractor.getMonth(this.date, this.format);
         }
 
         return month;
     },
     getYear:  function(date='', format='') {
-        let year = getYear(date, format);
+        let year = ElementExtractor.getYear(date, format);
         
         if(isEmpty(year)) {
-            return getYear(this.date, this.format);
+            return ElementExtractor.getYear(this.date, this.format);
         }
 
         return year;
@@ -169,24 +178,24 @@ chronologic.prototype = {
         return this.currentDay;
     },
     getLocationsInDateString: function(format) {
-        return formats.findPosition(format, 'all');
+        return findPosition(format, 'all');
     },
     getWeekNumber: function(date= '' | {}, format = '') {
         
         if(isEmpty(date) && isEmpty(format)) {
-            var year = getYear(this.date, this.format);
-            return getWeekNumber(this.date, this.format, year)
+            var year = ElementExtractor.getYear(this.date, this.format);
+            return WeekElementGenerator.findWeekNumber(this.date, this.format, year)
         }
 
-        var year = getYear(date, format);
-        return getWeekNumber(date, format, year);
+        var year = ElementExtractor.getYear(date, format);
+        return WeekElementGenerator.findWeekNumber(date, format, year);
     },
     getDayOfWeek: function(day, month, year) {
-        return getDayOfWeek(day, month, year);
+        return WeekElementGenerator.findDayOfWeek(day, month, year);
     },
     getMonthLength: function(month=-1, year=-1) {
         if(month > 0 && year > 0) {
-            return getMonthLength(month);
+            return ElementExtractor.getMonthLength(month);
         } else {
             return 0;
         }
@@ -199,10 +208,10 @@ chronologic.prototype = {
                 if(!isNumeric(year) || (year.length !== 2 || year.length != 4) ) {
                     return false;
                 } 
-                    return isLeapYear(parseInt(year));
+                    return Validator.isLeapYear(parseInt(year));
             case 'object':
                 if(year instanceof Date) {
-                    return isLeapYear(year.getFullYear());
+                    return Validator.isLeapYear(year.getFullYear());
                 }
 
                 console.warn('Invalid object type, only (Date) can be passed as parameter');
@@ -213,9 +222,9 @@ chronologic.prototype = {
         }
     },
     isValidYear: function(year) {
-        return isValidYear(year);
+        return Validator.isValidYear(year);
     },
     includesTime: function(date) {
-        return includesTime(date);
+        return Validator.includesTime(date);
     }
 };

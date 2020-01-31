@@ -1,5 +1,5 @@
 import { findIndexes, isEmpty, checkAndExecuteSingleStringValue, findDelimiter } from '../helper/helper';
-import { isMonth, isYear, isDay } from '../date/daate-element-validators';
+import { isMonth, isYear, isDay } from '../date/validator';
 
 export const formats = {
     day: [ // look for regular expressions to match the exact string
