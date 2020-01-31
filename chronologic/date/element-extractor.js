@@ -4,23 +4,29 @@ import { getMonthInfo } from "../maps/month";
 
 export class ElementExtractor {
 
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Extracts a specific date element from a date string
+     * 
+     * @param {string} date
+     * @param {string} format
+     * @param {string} option
+     * @param {boolean} parse
+     */
     static getDatePart(date='', format='', option='', parse) {
         return checkAndExecute(date, format, -1, (curatedDate, curatedFormat) => {
             return this.get(curatedDate, curatedFormat, option, parse)
         });
     }
 
-    /*
-        @param
-        @return
-        @description gets the coordinates of a specific element of the date string
-        and returns the actual value (as a string, maybe add option to parse it)
-    */
+    /**
+     * Gets the coordinates of a specific element of the date string
+     * and returns the actual value as a string
+     * 
+     * @param {string} date
+     * @param {string} format
+     * @param {string} option
+     * @param {boolean} parse
+     */
     static get(date, format, option, parse) {
 
         if(isEmpty(date)) {
@@ -124,11 +130,13 @@ export class ElementExtractor {
     //     }
     // };
 
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Extracts a date element if provided with an object containing the positioning of the elements in a date string
+     * i.e.: 11/xx/xxxx, where positioning is { start: 0, end: 2 }
+     * 
+     * @param {string} date
+     * @param {object} position
+     */
     static getDatePartByPosition(date, position) {
 
         if(isEmpty(date)) {
@@ -163,11 +171,12 @@ export class ElementExtractor {
     };
 
 
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Extracts the day from a date
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
     static getDay(date='', format='') {
         
         if(isEmpty(date)) {
@@ -181,11 +190,12 @@ export class ElementExtractor {
         return getDatePart(date, format, 'day', true);
     }
 
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Extracts the month from a date
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
     static getMonth(date='', format='') {
 
         if(isEmpty(date)) {
@@ -199,11 +209,12 @@ export class ElementExtractor {
         return getDatePart(date, format, 'month', true);
     }
 
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Extracts the year from a date
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
     static getYear(date='', format='') { 
 
         if(isEmpty(date)) {
@@ -217,35 +228,41 @@ export class ElementExtractor {
         return getDatePart(date, format, 'year', true); 
     }
 
-    /*
-        @param
-        @return
-        @description Not used yet but will be used for the validation of time object representation
-    */
-    // TODO: this is assuming the standard format is dd/mm/yyyy
-    static fromNumericDayGetFullDate(day=-1, currentDate='', format='') {
+//     /**
+//      * 
+//      * 
+//      * @param {number} date
+//      * @param {string} currentDate
+//      * @param {string} format
+//      */
+//    static fromNumericDayGetFullDate(day=-1, currentDate='', format='') {
+//     // TODO: this is assuming the standard format is dd/mm/yyyy
 
-        if(isEmpty(day)) {
-            throw new Error('Invalid [day] parameter provided');
-        }
+//         if(isEmpty(day)) {
+//             throw new Error('Invalid [day] parameter provided');
+//         }
 
-        if(isEmpty(currentDate)) {
-            throw new Error('Invalid [currentDate] parameter provided');
-        }
+//         if(isEmpty(currentDate)) {
+//             throw new Error('Invalid [currentDate] parameter provided');
+//         }
 
-        if(isEmpty(format)) {
-            throw new Error('Invalid [format] parameter provided');
-        }
+//         if(isEmpty(format)) {
+//             throw new Error('Invalid [format] parameter provided');
+//         }
 
-        var delimiter = findDelimiter(format);
+//         var delimiter = findDelimiter(format);
         
-        var month = getMonth(currentDate, format);
-        var year = getYear(currentDate, format); 
+//         var month = getMonth(currentDate, format);
+//         var year = getYear(currentDate, format); 
 
-        return day !== -1 ? `${day}${delimiter}${month}${delimiter}${year}` : '';
-    };
+//         return day !== -1 ? `${day}/${month}/${year}` : '';
+//     };
 
-
+    /**
+     * Gets the specific length for a month, i.e.: 1 (Jan) = 31 days
+     * 
+     * @param {number} month
+     */
     static getMonthLength(month) {
 
         if(isEmpty(month)) {

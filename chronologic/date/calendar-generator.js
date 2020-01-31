@@ -8,16 +8,15 @@ import { getDayInfo } from '../maps/day';
 
 export class Generator {
 
-    //
-    // generates days of a full month from a specific date
-    // the days are objects with information about the time, weekday, annual week, etc...
-    // the object properties should be self-explanatory
-    // function has time complexity => O(N+N)
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Generates days of a full month from a specific date
+     * the days are objects with information about the time, weekday, annual week, etc...
+     * the object properties should be self-explanatory
+     * function has time complexity => O(N+N)
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
     static getMonthObject(date='', format='') {
         return checkAndExecute(date, format, '', (date, format) => {
             var month = getDatePart(date, format, 'month', true);
@@ -79,14 +78,13 @@ export class Generator {
     //     return createdTimeString;
     // };
 
-
-    // generates a full year with all information about months and days
-    // time complexity => best: O(n), worst: O(n)
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * Generates a full year with all information about months and days
+     * time complexity => best: O(n), worst: O(n)
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
    static generateFullYear(date='', format='') {
         let year = checkAndExecute(date, format, -1, (date, format) => {
             return ElementExtractor.getDatePart(date, format, 'year', true);
@@ -107,15 +105,14 @@ export class Generator {
         return months;
     };
 
-    //
-    // generates a full month by by providing the date and the format
-    // the information is precise and has all information regarding the current month
-    // time complexity => best: O(1), worst: O(n)
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     *  Generates a full month by by providing the date and the format
+     *  the information is precise and has all information regarding the current month
+     *  time complexity => best: O(1), worst: O(n)
+     * 
+     *  @param {string} date
+     *  @param {string} format
+     */
     static generateFullMonth(date, format) {
         if(isEmpty(date)) {
             throw new Error('Cannot generate full month, invalid [date] parameter provided');
@@ -162,12 +159,15 @@ export class Generator {
         };
     };
 
-    // returns a full month from a specific date
-    /*
-        @param
-        @return
-        @description
-    */
+    /**
+     * returns a full month from a specific date
+     * 
+     *   @param {string} from date
+     *   @param {string} to date
+     *   @param {number} month
+     *   @param {number} year
+     *   @param {string} delimiter
+     */
     static generateMonthFromDate = (from, to, month, year, delimiter) => {
         var fullMonth = [];
         var fromDate = new Date(from);

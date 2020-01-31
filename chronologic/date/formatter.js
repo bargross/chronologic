@@ -6,12 +6,12 @@ import { Validator } from "./validator";
 
 export class Formatter {
 
-    /*
-        @param
-        @return
-        @description
-    */
-
+    /**
+     * Converts a date to UTC format
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
     static dateToUTCDateString(date = '', format='') {
         if(isEmpty(date)) {
             throw new Error('No [date] or valid [date] parameter provided');
@@ -28,14 +28,16 @@ export class Formatter {
         return `${month}-${day}-${year}`;
     };
 
-    // TODO: find the solution for the auto-format detector
-
-    /*
-        @param
-        @return
-        @description Not used yet but will be used for the validation of time object representation
-    */
+    /**
+     * Not worth writing about this yet
+     * 
+     * @param {string} date
+     * @param {string} format
+     */
     static inferStandardFormat(part='', format='') {
+        
+        // TODO: find a better solution to auto format detection and dispose of this ugly solution which doesn't even work properly (ugh!) 
+
         let dayAdded = false, monthAdded = false, yearAdded = false;
         var datePart = Number(part);
 

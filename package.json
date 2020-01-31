@@ -27,5 +27,6 @@
   "homepage": "https://github.com/bargross/chronologic#readme",
   "dependencies": {
     "jasmine": "^3.5.0"
-  }
+  },
+  "devDependencies": {}
 }
