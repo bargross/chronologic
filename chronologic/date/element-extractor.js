@@ -7,6 +7,9 @@ export class ElementExtractor {
     /**
      * Extracts a specific date element from a date string
      * 
+     * @static
+     * @memberof Generator
+     * @function getDatePart
      * @param {string} date
      * @param {string} format
      * @param {string} option
@@ -22,6 +25,9 @@ export class ElementExtractor {
      * Gets the coordinates of a specific element of the date string
      * and returns the actual value as a string
      * 
+     * @static
+     * @memberof Generator
+     * @function get
      * @param {string} date
      * @param {string} format
      * @param {string} option
@@ -134,6 +140,9 @@ export class ElementExtractor {
      * Extracts a date element if provided with an object containing the positioning of the elements in a date string
      * i.e.: 11/xx/xxxx, where positioning is { start: 0, end: 2 }
      * 
+     * @static
+     * @memberof Generator
+     * @function getDatePartByPosition
      * @param {string} date
      * @param {object} position
      */
@@ -174,6 +183,9 @@ export class ElementExtractor {
     /**
      * Extracts the day from a date
      * 
+     * @static
+     * @memberof Generator
+     * @function getDay
      * @param {string} date
      * @param {string} format
      */
@@ -193,6 +205,9 @@ export class ElementExtractor {
     /**
      * Extracts the month from a date
      * 
+     * @static
+     * @memberof Generator
+     * @function getMonth
      * @param {string} date
      * @param {string} format
      */
@@ -211,7 +226,9 @@ export class ElementExtractor {
 
     /**
      * Extracts the year from a date
-     * 
+     * @static
+     * @memberof Generator
+     * @function getYear
      * @param {string} date
      * @param {string} format
      */
@@ -261,6 +278,9 @@ export class ElementExtractor {
     /**
      * Gets the specific length for a month, i.e.: 1 (Jan) = 31 days
      * 
+     * @static
+     * @memberof Generator
+     * @function getMonthLength
      * @param {number} month
      */
     static getMonthLength(month) {

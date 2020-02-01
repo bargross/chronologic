@@ -1,5 +1,5 @@
 import { isEmpty } from "../helper/helper";
-import { getDay, getMonth, getYear, ElementExtractor } from "./element-extractor";
+import { ElementExtractor } from "./element-extractor";
 import { Validator } from "./validator";
 
 
@@ -9,6 +9,9 @@ export class Formatter {
     /**
      * Converts a date to UTC format
      * 
+     * @static
+     * @memberof Formatter
+     * @function dateToUTCDateString
      * @param {string} date
      * @param {string} format
      */
@@ -31,6 +34,9 @@ export class Formatter {
     /**
      * Not worth writing about this yet
      * 
+     * @static
+     * @memberof Generator
+     * @function inferStandardFormat
      * @param {string} date
      * @param {string} format
      */

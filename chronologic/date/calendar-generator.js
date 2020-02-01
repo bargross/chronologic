@@ -14,6 +14,10 @@ export class Generator {
      * the object properties should be self-explanatory
      * function has time complexity => O(N+N)
      * 
+     * 
+     * @static
+     * @memberof Generator
+     * @function getMonthObject
      * @param {string} date
      * @param {string} format
      */
@@ -82,6 +86,9 @@ export class Generator {
      * Generates a full year with all information about months and days
      * time complexity => best: O(n), worst: O(n)
      * 
+     * @static
+     * @memberof Generator
+     * @function generateFullYear
      * @param {string} date
      * @param {string} format
      */
@@ -110,8 +117,11 @@ export class Generator {
      *  the information is precise and has all information regarding the current month
      *  time complexity => best: O(1), worst: O(n)
      * 
-     *  @param {string} date
-     *  @param {string} format
+     * @static
+     * @memberof Generator
+     * @function generateFullMonth
+     * @param {string} date
+     * @param {string} format
      */
     static generateFullMonth(date, format) {
         if(isEmpty(date)) {
@@ -162,11 +172,14 @@ export class Generator {
     /**
      * returns a full month from a specific date
      * 
-     *   @param {string} from date
-     *   @param {string} to date
-     *   @param {number} month
-     *   @param {number} year
-     *   @param {string} delimiter
+     * @static
+     * @memberof Generator
+     * @function generateMonthFromDate
+     * @param {string} from date
+     * @param {string} to date
+     * @param {number} month
+     * @param {number} year
+     * @param {string} delimiter
      */
     static generateMonthFromDate = (from, to, month, year, delimiter) => {
         var fullMonth = [];
