@@ -6,11 +6,14 @@ import { Formatter } from "./formatter";
 
 export class WeekElementGenerator {
 
-    // returns the week number of the specific day
-    /*
-        @param
-        @return
-        @description
+    /**
+     * returns the week number of the specific day
+     * 
+     * @static
+     * @memberof WeekElementGenerator
+     * @function findWeekNumber
+     * @param {number} date
+     * @param {number} format
     */
     static findWeekNumber = function(date= '' | Date, format='', year=0) {
 
@@ -36,11 +39,15 @@ export class WeekElementGenerator {
         return Math.round(totalDaysToDate / 7);
     };
 
-    // Tomohiko Sakamoto algorithm (read later)
-    /*
-        @param
-        @return
-        @description
+    /**
+     * Tomohiko Sakamoto algorithm (read later)
+     * 
+     * @static
+     * @memberof WeekElementGenerator
+     * @function findDayOfWeekByDate
+     * @param {number} day
+     * @param {number} month
+     * @param {number} year
     */
     static findDayOfWeek = function(day, month, year) {
         var tDays = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
@@ -50,6 +57,14 @@ export class WeekElementGenerator {
         return Math.ceil(dayOfWeek);
     };
 
+    /**
+     * 
+     * @static
+     * @memberof WeekElementGenerator
+     * @function findDayOfWeekByDate
+     * @param {number} date
+     * @param {number} format
+    */
     static findDayOfWeekByDate(date='', format='') {
         return checkAndExecute(date, format, '', (sanitizedDate, sanitizedFormat) => {
             var allDateParts = ElementExtractor.getDatePart(sanitizedDate, sanitizedFormat, 'all', true);
@@ -63,10 +78,15 @@ export class WeekElementGenerator {
         });
     };
 
-    /*
-        @param
-        @return
-        @description
+
+    /**
+     * 
+     * @static
+     * @memberof WeekElementGenerator
+     * @function findWeekDayName
+     * @param {number} day
+     * @param {number} month
+     * @param {number} year
     */
     static findWeekDayName (day, month, year) {
         var dayOfWeek = this.findDayOfWeek(day, month, year);
@@ -74,10 +94,13 @@ export class WeekElementGenerator {
         return getDayInfo(dayOfWeek, 'name');
     };
 
-    /*
-        @param
-        @return
-        @description
+    /**
+     * 
+     * @static
+     * @memberof WeekElementGenerator
+     * @function findWeekDayNameByDate
+     * @param {string} date
+     * @param {string} format
     */
     static findWeekDayNameByDate = (date, format) => {
         var dateParts = ElementExtractor.getDatePart(date, format, 'name', true);
