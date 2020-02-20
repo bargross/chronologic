@@ -1,5 +1,5 @@
 import { formats, findPosition,  } from "../maps/format";
-import { getDatePart, getMonthLength, getMonth, ElementExtractor } from "./element-extractor";
+import { getDatePart, getMonthLength, ElementExtractor } from "./element-extractor";
 import { getMonthInfo } from "../maps/month";
 import { findDelimiter, checkAndExecute, isEmpty } from "../helper/helper";
 import { WeekElementGenerator } from "./week-element-generator";

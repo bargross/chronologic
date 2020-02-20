@@ -39,20 +39,43 @@ export class WeekElementGenerator {
         return Math.round(totalDaysToDate / 7);
     };
 
+
+    // Tomohiko Sakamoto algorithm (read later)
     /**
-     * Tomohiko Sakamoto algorithm (read later)
      * 
      * @static
      * @memberof WeekElementGenerator
      * @function findDayOfWeekByDate
-     * @param {number} day
-     * @param {number} month
-     * @param {number} year
+     * @param {number} day day of a specific date
+     * @param {number} month month of a specific date
+     * @param {number} year of a specific date
     */
     static findDayOfWeek = function(day, month, year) {
-        var tDays = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
-        var nYear = year - (month < 3) ? 1 : 0;
-        var dayOfWeek = (nYear + nYear/4 - nYear/100 + nYear/400 + tDays[month-1] + day) % 7;
+        if(day > 31) {
+            throw new Error('Invalid day');
+        }
+
+        if(month > 12) {
+            throw new Error('Invalid month');
+        }
+
+        const currentDate = new Date();
+        if(year > currentDate.getFullYear()) {
+            throw new Error('Invalid year');
+        }
+
+        const currentDay = currentDate.getDay();
+        const currentMonth = currentDate.getMonth();
+        if((month > currentMonth && year === currentDate.getFullYear()) 
+            || (day > currentDay && month > currentMonth && year === currentDate.getFullYear())) {
+            throw new Error('Cannot find day of the week based on a future date');
+        }
+
+        var leadingNumberOfDaysPerMonth = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
+        var previousYear = year - (month < 3) ? 1 : 0;
+        var selectedLeadNumberOfDays = leadingNumberOfDaysPerMonth[month-1];
+
+        var dayOfWeek = (previousYear + previousYear/4 - previousYear/100 + previousYear/400 + selectedLeadNumberOfDays + day) % 7;
 
         return Math.ceil(dayOfWeek);
     };

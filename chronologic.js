@@ -46,13 +46,13 @@ export function chronologic(date='', format='', options={}) {
     this.year   = year;
     this.time   = time;
 
-    const dateWatcher = new BehaviorSubject(dateOnly);
-    this.dateWatcher$ = dateWatcher.asObservable();
-    this.date         = dateWatcher.asObservable();
+    const dateChange = new BehaviorSubject(dateOnly);
+    this.dateChange$ = dateChange;
+    this.date        = this.dateChange$.asObservable();
     
-    const formatWatcher = new BehaviorSubject(format);
-    this.formatWatcher$ = formatWatcher; 
-    this.format = formatWatcher.asObservable();
+    const formatChange = new BehaviorSubject(format);
+    this.formatChange$ = formatChange; 
+    this.format        = this.formatChange$.asObservable();
 
     var defaultFormat = 'dd/mm/yyyy';
     
@@ -103,7 +103,7 @@ export function chronologic(date='', format='', options={}) {
         format: defaultFormat
     };
     
-    const watcher$ = new BehaviorSubject(options);
+    const optionsChange$ = new BehaviorSubject(options);
 
     this.weeksLeft       = 52 - week;
     this.currentWeek     = week;
@@ -112,8 +112,8 @@ export function chronologic(date='', format='', options={}) {
     this.isLeapYear      = Validator.isLeapYear(year);
     this.isCurrentYear   = year == actualDate.getFullYear();
 
-    this.optionsWatcher$ = watcher$;
-    this.options         = watcher$.asObservable();
+    this.optionsChange$  = optionsChange$;
+    this.options         = optionsChange$.asObservable();
 }
 
 chronologic.prototype = {
@@ -174,19 +174,19 @@ chronologic.prototype = {
      * 
      * @param {string} date
      */
-    setDate: function(date) { this.date = date; },
+    setDate: function(date) { this.dateChange$.next(date); },
 
     /**
      * 
      * @param {string} format
      */
-    setFormat: function(format) { this.formatWatcher$.next(format); },
+    setFormat: function(format) { this.formatChange$.next(format); },
     
     /**
      * 
      * @param {string} options
      */
-    setOptions: function(options)  { this.optionsWatcher$.next(options); },
+    setOptions: function(options)  { this.optionsChange$.next(options); },
 
     /**
      * 
@@ -389,5 +389,12 @@ chronologic.prototype = {
      */
     includesTime: function(date) {
         return Validator.includesTime(date);
-    }
+    },
+
+    /**
+     * returns a boolean indicating whether the given date contains a time substring
+     * 
+     * @param {string} date
+     */
+    resetOptions: function() { this.optionsChange$.next(null); }
 };

@@ -1,5 +1,5 @@
 import { findPosition } from "../maps/format";
-import { findDelimiter, isEmpty } from "../helper/helper";
+import { isEmpty } from "../helper/helper";
 import { getMonthInfo } from "../maps/month";
 
 export class ElementExtractor {
