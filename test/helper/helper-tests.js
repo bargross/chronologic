@@ -1,4 +1,4 @@
-import { replaceMultipleValues } from '../../chronologic/helper/helper';
+import { replaceMultipleValues } from '../../chronologic/utils/utils';
 
 
 describe('replaceMultipleValues', () => {

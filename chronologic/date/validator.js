@@ -1,6 +1,6 @@
 import { dayExists } from "../maps/day";
 import { monthExists } from "../maps/month";
-import { isEmpty, assertTypeOf, isNumeric } from "../helper/helper";
+import { isEmpty, assertTypeOf, isNumeric } from "../utils/utils";
 
 export  class Validator {
    

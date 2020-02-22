@@ -1,5 +1,5 @@
 import { findPosition } from "../maps/format";
-import { isEmpty } from "../helper/helper";
+import { isEmpty } from "../utils/utils";
 import { getMonthInfo } from "../maps/month";
 
 export class ElementExtractor {
@@ -70,7 +70,8 @@ export class ElementExtractor {
         }
 
         if(position === -1) {
-            console.warn(option + ' not found!');
+            console.error(option + ' not found!');
+            
             return position;
         }
         

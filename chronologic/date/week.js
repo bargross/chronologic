@@ -1,16 +1,16 @@
-import { checkAndExecute, assertTypeOf } from "../helper/helper";
+import { checkAndExecute, assertTypeOf } from "../utils/utils";
 import { ElementExtractor } from "./element-extractor";
 import { getDayInfo } from "../maps/day";
-import { Formatter } from "./formatter";
+import { Formatter } from "./format";
 
 
-export class WeekElementGenerator {
+export class Week {
 
     /**
      * returns the week number of the specific day
      * 
      * @static
-     * @memberof WeekElementGenerator
+     * @memberof Week
      * @function findWeekNumber
      * @param {number} date
      * @param {number} format
@@ -44,7 +44,7 @@ export class WeekElementGenerator {
     /**
      * 
      * @static
-     * @memberof WeekElementGenerator
+     * @memberof Week
      * @function findDayOfWeekByDate
      * @param {number} day day of a specific date
      * @param {number} month month of a specific date
@@ -83,7 +83,7 @@ export class WeekElementGenerator {
     /**
      * 
      * @static
-     * @memberof WeekElementGenerator
+     * @memberof Week
      * @function findDayOfWeekByDate
      * @param {number} date
      * @param {number} format
@@ -105,7 +105,7 @@ export class WeekElementGenerator {
     /**
      * 
      * @static
-     * @memberof WeekElementGenerator
+     * @memberof Week
      * @function findWeekDayName
      * @param {number} day
      * @param {number} month
@@ -120,7 +120,7 @@ export class WeekElementGenerator {
     /**
      * 
      * @static
-     * @memberof WeekElementGenerator
+     * @memberof Week
      * @function findWeekDayNameByDate
      * @param {string} date
      * @param {string} format

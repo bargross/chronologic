@@ -2,7 +2,7 @@ import {
     checkAndExecute, 
     checkAndExecuteSingleStringValue,
     isEmpty 
-} from '../helper/helper';
+} from '../utils/utils';
 import { isValidTime } from '../time/time'
 
 export class TimeDetector { 

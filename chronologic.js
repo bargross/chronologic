@@ -1,11 +1,11 @@
 import { TimeDetector } from './chronologic/time/time-detector';
-import { WeekElementGenerator } from './chronologic/date/week-element-generator'
+import { Week } from './chronologic/date/week'
 import { getMonthInfo } from './chronologic/maps/month';
 import { findPosition } from './chronologic/maps/format';
 import { Generator } from './chronologic/date/calendar-generator';
-import { checkAndExecute, isNumeric, isEmpty } from './chronologic/helper/helper';
+import { checkAndExecute, isNumeric, isEmpty } from './chronologic/utils/utils';
 import { Validator } from './chronologic/date/validator';
-import { Formatter } from './chronologic/date/formatter';
+import { Format } from './chronologic/date/format';
 import { ElementExtractor } from './chronologic/date/element-extractor';
 import { BehaviorSubject } from './node_modules/rxjs/index';
 
@@ -18,126 +18,143 @@ import { BehaviorSubject } from './node_modules/rxjs/index';
  * @param {string} format
  * @param {object} options
  */
-export function chronologic(date='', format='', options={}) {
+export class Chronologic {
     
-    if(isEmpty(date)) {
-        throw new Error('Invalid date parameter provided');
+    // variables
+    day = null;
+    month = null;
+    year = null;
+    week = null;
+    time = null;
+    currentDate = null;
+    lastDayOfTheYear = null;
+    timeFormat = null;
+    weeksLeft       = null;
+    currentWeek     = null;
+    currentMonth    = null;
+    totalMonthsLeft = null;
+    isLeapYear      = null;
+    isCurrentYear   = null;
+
+    // observers
+    dateChange$ = new BehaviorSubject(null);
+    formatChange$ = new BehaviorSubject(null);
+    optionsChange$ = new BehaviorSubject(null);
+
+    // observables
+    date = dateChange$.asObservable();
+    format = formatChange$.asObservable();
+    options = optionsChange$.asObservable();
+
+    constructor(date='', format='', options={}) {
+    
+        if(isEmpty(date)) {
+            throw new Error('Invalid date parameter provided');
+        }
+
+        if(isEmpty(format)) {
+            throw new Error('Invalid date parameter provided');
+        }
+
+        let dateOnly;
+        let time;
+        if(TimeDetector.includesTime(date)) {
+            var dateArrayString = date.split(',');
+            dateOnly = dateArrayString[0];
+            time = TimeDetector.detectTime(dateArrayString[1])
+        }
+        
+        var day   = ElementExtractor.getDay(date, format);
+        var month = ElementExtractor.getMonth(date, format);
+        var year  = ElementExtractor.getYear(date, format);
+
+        this.timeFormat = Format.inferTimeFormat(time);
+        this.day    = day;
+        this.month  = month;
+        this.year   = year;
+        this.time   = time;
+
+        this.dateChange$.next(dateOnly);
+        this.formatChange$.next(format);
+        this.optionsChange$.next(options);
+
+        var defaultFormat = 'dd/mm/yyyy';
+        
+        var week = Week.findWeekNumber(date, format, year);
+        this.week  = week;
+
+        var actualDate = new Date();
+        var actualTime = actualDate.toLocaleTimeString();
+        var actualDateString = actualDate.toLocaleDateString();
+
+        var dayPart = ElementExtractor.getDay(actualDateString, defaultFormat);
+        var monthPart = ElementExtractor.getMonth(actualDateString, defaultFormat);
+        var yearPart = ElementExtractor.getYear(actualDateString, defaultFormat);    
+        var nameOfCurrentDay = Week.findWeekDayNameByDate(actualDateString, defaultFormat);
+
+        this.currentDay  = {
+            name: nameOfCurrentDay,
+            weekDay: Week.findDayOfWeek(dayPart, monthPart, yearPart),
+            day: dayPart,
+            timeSet: { 
+                time: actualTime, 
+                format: Format.inferTimeFormat(actualTime) 
+            },
+            week: Week.findWeekNumber(actualDate, defaultFormat, yearPart),
+            year: yearPart,
+            month: monthPart,
+            fullDate: `${dayPart}/${ (monthPart > 9 ? monthPart : '0'+monthPart) }/${yearPart}`,
+            format: defaultFormat
+        };
+
+        var dateOfLastDayOfYear = `31/12/${year}`;
+        var nameOfLastDayOfYear = Week.findWeekDayNameByDate(dateOfLastDayOfYear, defaultFormat);
+        var lastDayDatePart = ElementExtractor.getDay(dateOfLastDayOfYear, defaultFormat);
+        var lastMonthDatePart = ElementExtractor.getMonth(dateOfLastDayOfYear, defaultFormat);
+
+        this.lastDayOfTheYear   = { 
+            name: nameOfLastDayOfYear,
+            weekDay: Week.findDayOfWeek(lastDayDatePart, lastMonthDatePart, year),
+            day: allDateParts.day,
+            timeSet: { 
+                time: '00:00:00', 
+                format: Format.inferTimeFormat(this.time) 
+            },
+            week: Week.findWeekNumber(dateOfLastDayOfYear, defaultFormat, year),
+            year: year,
+            month: allDateParts.month,
+            fullDate: `${lastDayDatePart}/${ (lastMonthDatePart > 9 ? lastMonthDatePart : '0'+lastMonthDatePart) }/${year}`,
+            format: defaultFormat
+        };
+
+        this.weeksLeft       = 52 - week;
+        this.currentWeek     = week;
+        this.currentMonth    = month;
+        this.totalMonthsLeft = 12 - actualDate.getMonth();
+        this.isLeapYear      = Validator.isLeapYear(year);
+        this.isCurrentYear   = year == actualDate.getFullYear();
     }
-
-    if(isEmpty(format)) {
-        throw new Error('Invalid date parameter provided');
-    }
-
-    let dateOnly;
-    let time;
-    if(TimeDetector.includesTime(date)) {
-        var dateArrayString = date.split(',');
-        dateOnly = dateArrayString[0];
-        time = TimeDetector.detectTime(dateArrayString[1])
-    }
-    
-    var day   = ElementExtractor.getDay(date, format);
-    var month = ElementExtractor.getMonth(date, format);
-    var year  = ElementExtractor.getYear(date, format);
-
-    this.timeFormat = Formatter.inferTimeFormat(time);
-    this.day    = day;
-    this.month  = month;
-    this.year   = year;
-    this.time   = time;
-
-    const dateChange = new BehaviorSubject(dateOnly);
-    this.dateChange$ = dateChange;
-    this.date        = this.dateChange$.asObservable();
-    
-    const formatChange = new BehaviorSubject(format);
-    this.formatChange$ = formatChange; 
-    this.format        = this.formatChange$.asObservable();
-
-    var defaultFormat = 'dd/mm/yyyy';
-    
-    var week = WeekElementGenerator.findWeekNumber(date, format, year);
-	this.week  = week;
-
-    var actualDate = new Date();
-    var actualTime = actualDate.toLocaleTimeString();
-    var actualDateString = actualDate.toLocaleDateString();
-
-    var dayPart = ElementExtractor.getDay(actualDateString, defaultFormat);
-    var monthPart = ElementExtractor.getMonth(actualDateString, defaultFormat);
-    var yearPart = ElementExtractor.getYear(actualDateString, defaultFormat);    
-    var nameOfCurrentDay = WeekElementGenerator.findWeekDayNameByDate(actualDateString, defaultFormat);
-
-    this.currentDay  = {
-        name: nameOfCurrentDay,
-        weekDay: WeekElementGenerator.findDayOfWeek(dayPart, monthPart, yearPart),
-        day: dayPart,
-        timeSet: { 
-            time: actualTime, 
-            format: Formatter.inferTimeFormat(actualTime) 
-        },
-        week: WeekElementGenerator.findWeekNumber(actualDate, defaultFormat, yearPart),
-        year: yearPart,
-        month: monthPart,
-        fullDate: `${dayPart}/${ (monthPart > 9 ? monthPart : '0'+monthPart) }/${yearPart}`,
-        format: defaultFormat
-    };
-
-    var dateOfLastDayOfYear = `31/12/${year}`;
-    var nameOfLastDayOfYear = WeekElementGenerator.findWeekDayNameByDate(dateOfLastDayOfYear, defaultFormat);
-    var lastDayDatePart = ElementExtractor.getDay(dateOfLastDayOfYear, defaultFormat);
-    var lastMonthDatePart = ElementExtractor.getMonth(dateOfLastDayOfYear, defaultFormat);
-
-    this.lastDayOfTheYear   = { 
-        name: nameOfLastDayOfYear,
-        weekDay: WeekElementGenerator.findDayOfWeek(lastDayDatePart, lastMonthDatePart, year),
-        day: allDateParts.day,
-        timeSet: { 
-            time: '00:00:00', 
-            format: Formatter.inferTimeFormat(this.time) 
-        },
-        week: WeekElementGenerator.findWeekNumber(dateOfLastDayOfYear, defaultFormat, year),
-        year: year,
-        month: allDateParts.month,
-        fullDate: `${lastDayDatePart}/${ (lastMonthDatePart > 9 ? lastMonthDatePart : '0'+lastMonthDatePart) }/${year}`,
-        format: defaultFormat
-    };
-    
-    const optionsChange$ = new BehaviorSubject(options);
-
-    this.weeksLeft       = 52 - week;
-    this.currentWeek     = week;
-    this.currentMonth    = month;
-    this.totalMonthsLeft = 12 - actualDate.getMonth();
-    this.isLeapYear      = Validator.isLeapYear(year);
-    this.isCurrentYear   = year == actualDate.getFullYear();
-
-    this.optionsChange$  = optionsChange$;
-    this.options         = optionsChange$.asObservable();
-}
-
-chronologic.prototype = {
     
     /**
      * this function allows you to find any time strings within a date string
      * 
      * @param {string} date
      */
-    detectTime: function(date='') {
+    detectTime(date) {
         return TimeDetector.detectTime(date);
-    },
+    }
     
     /**
      * returns the time format of the time given
      * 
      * @param {string} time
      */
-    getTimeFormat: function(time='') {
+    getTimeFormat(time) {
         if(Validator.isValidTime(time)) {
-            return Formatter.inferTimeFormat(time);
+            return Format.inferTimeFormat(time);
         } 
         return '';
-    },
+    }
 
     /**
      * generates a full month from a given date
@@ -145,55 +162,55 @@ chronologic.prototype = {
      * @param {string} date
      * @param {string} format
      */
-    genMonthFromDate: function(date='', format='') {
+    genMonthFromDate(date, format) {
         var dateParts = ElementExtractor.getDatePart(date, format, 'all', true);
         var monthInfo = getMonthInfo(dateParts.month, 'all', dateParts.year);
         var positions = findPosition(format, 'all');
         return Generator.generateMonthFromDate(1, monthInfo.length, dateParts.month, dateParts.year, positions);
-    },
+    }
 
     // setters
     /**
      * 
      * 
      */
-    getDateAsObservable: function() { return this.date; },
+    getDateAsObservable() { return this.date; }
     /**
      * 
      * 
      */
-    getFormatAsObservable: function() {  return this.format; },
+    getFormatAsObservable() {  return this.format; }
     /**
      *
      * 
      */
-    getOptionsAsObservable: function() { return this.options; },
+    getOptionsAsObservable() { return this.options; }
 
     // setters
     /**
      * 
      * @param {string} date
      */
-    setDate: function(date) { this.dateChange$.next(date); },
+    setDate(date) { this.dateChange$.next(date); }
 
     /**
      * 
      * @param {string} format
      */
-    setFormat: function(format) { this.formatChange$.next(format); },
+    setFormat(format) { this.formatChange$.next(format); }
     
     /**
      * 
      * @param {string} options
      */
-    setOptions: function(options)  { this.optionsChange$.next(options); },
+    setOptions(options)  { this.optionsChange$.next(options); }
 
     /**
      * 
      * @param {string} date
      * @param {string} format
      */
-    getMonthCalendarName: function(date='', format='') {
+    getMonthCalendarName(date, format) {
         var result = checkAndExecute(date, format, '', (date, format) => {
             var month = ElementExtractor.getMonth(date, format);
             var year = ElementExtractor.getYear(date, format);
@@ -205,7 +222,7 @@ chronologic.prototype = {
         } else {
           return  result;
         }
-    },
+    }
 
     // /**
     //  * generates a full month from a given date
@@ -234,13 +251,13 @@ chronologic.prototype = {
      * @param {string} date
      * @param {string} format
      */
-    getDay: function(date='', format='') {
+    getDay(date, format) {
         let day = ElementExtractor.getDay(date, format);
         if(isEmpty(day)) {
             return ElementExtractor.getDay(this.date, this.format);
         }
         return day;
-    },
+    }
 
     /**
      * gets the month for a given date, if no date - format is provided, 
@@ -249,7 +266,7 @@ chronologic.prototype = {
      * @param {string} date
      * @param {string} format
      */
-    getMonth: function(date='', format='') {
+    getMonth(date, format) {
         let month = ElementExtractor.getMonth(date, format);
         
         if(isEmpty(month)) {
@@ -257,7 +274,7 @@ chronologic.prototype = {
         }
 
         return month;
-    },
+    }
 
     /**
      * extracts the year from the given date, if no date - format is provided, 
@@ -266,7 +283,7 @@ chronologic.prototype = {
      * @param {string} date
      * @param {string} format
      */
-    getYear:  function(date='', format='') {
+    getYear(date, format) {
         let year = ElementExtractor.getYear(date, format);
         
         if(isEmpty(year)) {
@@ -274,36 +291,36 @@ chronologic.prototype = {
         }
 
         return year;
-    },
+    }
 
     /**
      * generates a full month from a given date
      * 
      */
-    toString:  function() {
+    toString() {
 
         if(isEmpty(this.date)) {
             return '';
         }
         
         return this.date;
-    },
+    }
 
     /**
      * returns the current day, with useful info
      */
-    getCurrentDay: function() {
+    getCurrentDay() {
         return this.currentDay;
-    },
+    }
 
     /**
      * returns the locations of the day, month and year elements within a string with xx/xx/xxxx format
      * 
      * @param {string} format
      */
-    getLocationsInDateString: function(format) {
+    getLocationsInDateString(format) {
         return findPosition(format, 'all');
-    },
+    }
 
     /**
      * returns a number representing the week number the given day falls onto within the year
@@ -311,16 +328,16 @@ chronologic.prototype = {
      * @param {string} date
      * @param {string} format
      */
-    getWeekNumber: function(date= '', format = '') {
+    getWeekNumber(date, format) {
         
         if(isEmpty(date) && isEmpty(format)) {
             var year = ElementExtractor.getYear(this.date, this.format);
-            return WeekElementGenerator.findWeekNumber(this.date, this.format, year)
+            return Week.findWeekNumber(this.date, this.format, year)
         }
 
         var year = ElementExtractor.getYear(date, format);
-        return WeekElementGenerator.findWeekNumber(date, format, year);
-    },
+        return Week.findWeekNumber(date, format, year);
+    }
 
     /**
      * returns a number indicating the numeric representation of a day within a 7 day week, e.g.: day 31 could fall on the second day of the week, there 2 would be returned
@@ -330,29 +347,29 @@ chronologic.prototype = {
      * @param {number} month
      * @param {number} year
      */
-    getDayOfWeek: function(day, month, year) {
-        return WeekElementGenerator.findDayOfWeek(day, month, year);
-    },
+    getDayOfWeek(day, month, year) {
+        return Week.findDayOfWeek(day, month, year);
+    }
 
     /**
      * returns the length of a given month
      * 
      * @param {number, string} date
      */
-    getMonthLength: function(month=-1, year=-1) {
+    getMonthLength(month, year) {
         if(month > 0 && year > 0) {
             return ElementExtractor.getMonthLength(month);
         } else {
             return 0;
         }
-    },
+    }
 
     /**
      * returns a boolean indicating whether the given year is a leap year
      * 
      * @param {number, string} year
      */
-    isLeapYear: function(year) {
+    isLeapYear(year) {
         switch(typeof year) {
             case 'number': return isLeapYear(year);
             case 'string':
@@ -371,30 +388,30 @@ chronologic.prototype = {
                 console.warn('Invalid argument type');
                 return false;
         }
-    },
+    }
 
     /**
      * returns a boolean indicating whether the given year is valid
      * 
      * @param {number, string} year
      */
-    isValidYear: function(year) {
+    isValidYear(year) {
         return Validator.isValidYear(year);
-    },
+    }
 
     /**
      * returns a boolean indicating whether the given date contains a time substring
      * 
      * @param {string} date
      */
-    includesTime: function(date) {
+    includesTime(date) {
         return Validator.includesTime(date);
-    },
+    }
 
     /**
      * returns a boolean indicating whether the given date contains a time substring
      * 
      * @param {string} date
      */
-    resetOptions: function() { this.optionsChange$.next(null); }
-};
+    resetOptions() { this.optionsChange$.next(null); }
+}

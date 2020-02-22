@@ -1,10 +1,10 @@
-import { isEmpty } from "../helper/helper";
+import { isEmpty } from "../utils/utils";
 import { ElementExtractor } from "./element-extractor";
 import { Validator } from "./validator";
 
 
 
-export class Formatter {
+export class Format {
 
     /**
      * Converts a date to UTC format

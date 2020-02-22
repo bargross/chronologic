@@ -1,8 +1,8 @@
 import { formats, findPosition,  } from "../maps/format";
 import { getDatePart, getMonthLength, ElementExtractor } from "./element-extractor";
 import { getMonthInfo } from "../maps/month";
-import { findDelimiter, checkAndExecute, isEmpty } from "../helper/helper";
-import { WeekElementGenerator } from "./week-element-generator";
+import { findDelimiter, checkAndExecute, isEmpty } from "../utils/utils";
+import { Week } from "./week";
 import { getDayInfo } from '../maps/day';
 
 
@@ -197,7 +197,7 @@ export class Generator {
             date[positions.month] = month;
             date[positions.year] = year;
 
-        var dayOfWeek = WeekElementGenerator.findDayOfWeek(fromDate, month, year);
+        var dayOfWeek = Week.findDayOfWeek(fromDate, month, year);
         var fromDateString = fromDate.toLocaleDateString();
         var dayInfo = {
                 calendarDate: firstCall ? from : date.join(delimiter), 
@@ -205,7 +205,7 @@ export class Generator {
                 dayOfWeek: dayOfWeek,
                 monthDay: fromDateString,
                 timeSet: { time: '00:00:00', format: '' },
-                week: WeekElementGenerator.findWeekNumber(fromDateString, format, fromDate.getFullYear())
+                week: Week.findWeekNumber(fromDateString, format, fromDate.getFullYear())
             };
 
             fullMonth.push(dayInfo);
@@ -225,7 +225,7 @@ export class Generator {
             dayOfWeek: dayOfWeek,
             monthDay: fromDateString,
             timeSet: { time: '00:00:00', format: '' },
-            week: WeekElementGenerator.findWeekNumber(fromDateString, format, fromDate.getFullYear())
+            week: Week.findWeekNumber(fromDateString, format, fromDate.getFullYear())
         });
         
         return fullMonth;

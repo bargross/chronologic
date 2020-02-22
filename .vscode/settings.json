@@ -6,5 +6,7 @@
     "javascript.updateImportsOnFileMove.enabled": "always",
     "javascript.suggest.completeJSDocs": true,
     "javascript.preferences.quoteStyle": "single",
-    "editor.showUnused":  true
+    "editor.showUnused":  true,
+    "editor.fontFamily": "Cascadia Code",
+    "editor.fontLigatures": true
 }

@@ -1,4 +1,4 @@
-import { isNumeric, assertTypeOf } from "../helper/helper";
+import { isNumeric, assertTypeOf } from "../utils/utils";
 
 export const days = [
     { fullName: 'Monday',    abbrName: 'Mon', index: 1 },
