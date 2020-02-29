@@ -1,4 +1,4 @@
-import { checkAndExecute, assertTypeOf } from "../utils/utils";
+import { checkAndExecuteCallback, assertTypeOf } from "../utils/utils";
 import { ElementExtractor } from "./element-extractor";
 import { getDayInfo } from "../maps/day";
 import { Formatter } from "./format";
@@ -89,7 +89,7 @@ export class Week {
      * @param {number} format
     */
     static findDayOfWeekByDate(date='', format='') {
-        return checkAndExecute(date, format, '', (sanitizedDate, sanitizedFormat) => {
+        return checkAndExecuteCallback(date, format, '', (sanitizedDate, sanitizedFormat) => {
             var allDateParts = ElementExtractor.getDatePart(sanitizedDate, sanitizedFormat, 'all', true);
             var dayOfWeek = this.findDayOfWeek(allDateParts.day, allDateParts.month, allDateParts.year);
             

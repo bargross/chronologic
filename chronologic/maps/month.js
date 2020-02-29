@@ -1,5 +1,5 @@
 import { isNumeric, isEmpty, assertTypeOf } from "../utils/utils";
-import { isValidMonth, isValidYear } from "../date/validator";
+import { Validator } from "../date/validator";
 
 export const months = [
     { fullName: 'January',    abbreviatedName: 'Jan', length: 31, index: 1 },
@@ -30,7 +30,7 @@ export const getMonthInfo = (month=-1|'', option=''|'name'|'abbr'|'length', year
     }
 
     // needs to be a specific month/s?
-    if(isValidMonth(month) && isValidYear(year) && isLeapYear(year)) { 
+    if(Validator.isValidMonth(month) && Validator.isValidYear(year) && Validator.isLeapYear(year)) { 
         monthInfo.length = monthInfo.length + 1; 
     }
 

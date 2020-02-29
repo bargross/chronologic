@@ -39,66 +39,11 @@ export class Format {
      * @function inferStandardFormat
      * @param {string} date
      * @param {string} format
+     * @deprecated
      */
-    static inferStandardFormat(part='', format='') {
+    static inferStandardFormat(date) {
         
-        // TODO: find a better solution to auto format detection and dispose of this ugly solution which doesn't even work properly (ugh!) 
-
-        let dayAdded = false, monthAdded = false, yearAdded = false;
-        var datePart = Number(part);
-
-        var abbreviated = (part='', delimiter='', addDelimiter=false) => {
-            if(part.length == 3) {
-                var formatType = Validator.isAbbreviatedOrFullName(part);
-                if(formatType.isAbbrDay) {
-                    format += `DDD${addDelimiter ? delimiter : ''}`;
-                    dayAdded = !dayAdded;
-                } 
-        
-                if(formatType.isAbbrMonth) {
-                    format +=`MMM${addDelimiter ? delimiter : ''}`;
-                    monthAdded = !monthAdded;
-                }
-            }
-        };
-
-        if(i < dateArrayString.length - 1) {
-            
-            abbreviated(part, format, delimiter, true);
-
-            if(part.length === 4 && !yearAdded) {
-                format += `yyyy${delimiter}`;
-                yearAdded = !yearAdded;
-            }
-
-            if(!isNaN(datePart) && (datePart >= 1 && datePart <= 31) && !dayAdded) {
-                format += `dd${delimiter}`;
-                dayAdded = !dayAdded;
-            }
-
-            if(!isNaN(datePart) && (datePart >= 1 && datePart <= 12) && !monthAdded) {
-                format += `mm${delimiter}`;
-                monthAdded = !monthAdded; 
-            }
-        } else {
-            abbreviated(part, format, delimiter, false);
-
-            if(part.length === 4 && !yearAdded) {
-                format += `yyyy`;
-                yearAdded = !yearAdded;
-            }
-
-            if(!isNaN(datePart) && (datePart >= 1 && datePart <= 31) && !dayAdded) {
-                format += `dd`;
-                dayAdded = !dayAdded;
-            }
-
-            if(!isNaN(datePart) && (datePart >= 1 && datePart <= 12) && !monthAdded) {
-                format += `mm`;
-                monthAdded = !monthAdded; 
-            }
-        }
-    };
+    }
 
     static inferTimeFormat(time='') {
         

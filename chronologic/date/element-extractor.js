@@ -88,54 +88,7 @@ export class ElementExtractor {
         }
 
         return part
-    };
-
-
-
-    // Not sure this function is still relevant
-    /*
-        @param
-        @return
-        @description
-    */
-    // getInfo(value=-1|'', arrayOfOptions=[], option='') {
-
-    //     if(isEmpty(value)) {
-    //         throw new Error('Cannot extract date element by position, invalid [date] parameter provided');
-    //     }
-
-    //     if(isEmpty(arrayOfOptions)) {
-    //         throw new Error('Cannot extract date element by position, invalid [position] parameter provided');
-    //      }
-
-    //     if(isEmpty(option)) {
-    //         throw new Error('Cannot extract date element by position, invalid [position] parameter provided');
-    //      }
-
-    //     if(value == 0) {
-    //         value = 1;
-    //     }
-
-    //     let number = -1;
-    //     switch(option) {
-    //         case 'full':
-    //             return assertTypeOf(value, 'number') ? arrayOfOptions[value-1].fullName : ''; 
-    //         case 'abbr':
-    //             return assertTypeOf(value, 'number') ? arrayOfOptions[value-1].abbrName : ''; 
-    //         case 'num':
-    //             if(assertTypeOf(value, 'string') && !isNaN(value)) {
-    //                 number = arrayOfOptions
-    //                     .map( (info, index) => {
-    //                         if(info.fullName === value || info.abbrName === value) {
-    //                             return index+1;
-    //                         }
-    //                     })[0];
-    //             }
-    //             return number;
-    //         default:
-    //             return {};
-    //     }
-    // };
+    }
 
     /**
      * Extracts a date element if provided with an object containing the positioning of the elements in a date string
@@ -178,7 +131,7 @@ export class ElementExtractor {
                 console.warn('Invalid positions in object');
                 return;
         }
-    };
+    }
 
 
     /**
@@ -200,7 +153,7 @@ export class ElementExtractor {
             throw new Error('Cannot extract date element by position, invalid [format] parameter provided');
         }
 
-        return getDatePart(date, format, 'day', true);
+        return this.getDatePart(date, format, 'day', true);
     }
 
     /**
@@ -222,7 +175,7 @@ export class ElementExtractor {
             throw new Error('Cannot extract month, invalid [format] parameter provided');
         }
 
-        return getDatePart(date, format, 'month', true);
+        return this.getDatePart(date, format, 'month', true);
     }
 
     /**
@@ -243,38 +196,8 @@ export class ElementExtractor {
             throw new Error('Cannot extract year, invalid [format] parameter provided');
         }
 
-        return getDatePart(date, format, 'year', true); 
+        return this.getDatePart(date, format, 'year', true); 
     }
-
-//     /**
-//      * 
-//      * 
-//      * @param {number} date
-//      * @param {string} currentDate
-//      * @param {string} format
-//      */
-//    static fromNumericDayGetFullDate(day=-1, currentDate='', format='') {
-//     // TODO: this is assuming the standard format is dd/mm/yyyy
-
-//         if(isEmpty(day)) {
-//             throw new Error('Invalid [day] parameter provided');
-//         }
-
-//         if(isEmpty(currentDate)) {
-//             throw new Error('Invalid [currentDate] parameter provided');
-//         }
-
-//         if(isEmpty(format)) {
-//             throw new Error('Invalid [format] parameter provided');
-//         }
-
-//         var delimiter = findDelimiter(format);
-        
-//         var month = getMonth(currentDate, format);
-//         var year = getYear(currentDate, format); 
-
-//         return day !== -1 ? `${day}/${month}/${year}` : '';
-//     };
 
     /**
      * Gets the specific length for a month, i.e.: 1 (Jan) = 31 days

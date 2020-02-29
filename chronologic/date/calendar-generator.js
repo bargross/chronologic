@@ -1,7 +1,7 @@
 import { formats, findPosition,  } from "../maps/format";
 import { getDatePart, getMonthLength, ElementExtractor } from "./element-extractor";
 import { getMonthInfo } from "../maps/month";
-import { findDelimiter, checkAndExecute, isEmpty } from "../utils/utils";
+import { findDelimiter, checkAndExecuteCallback, isEmpty } from "../utils/utils";
 import { Week } from "./week";
 import { getDayInfo } from '../maps/day';
 
@@ -22,7 +22,7 @@ export class Generator {
      * @param {string} format
      */
     static getMonthObject(date='', format='') {
-        return checkAndExecute(date, format, '', (date, format) => {
+        return checkAndExecuteCallback(date, format, '', (date, format) => {
             var month = getDatePart(date, format, 'month', true);
             var dayOne = 1,
                 endDay = getMonthLength(month); 
@@ -43,7 +43,7 @@ export class Generator {
         @description
     */
     // reformat(format='', dateParts={}) {
-    //     return checkAndExecute(this.date, format, '', (date, format) => {
+    //     return checkAndExecuteCallback(this.date, format, '', (date, format) => {
     //         var formatParts = getDatePart(date, format, 'all', false);
     //         let dateContent;
 
@@ -93,7 +93,7 @@ export class Generator {
      * @param {string} format
      */
    static generateFullYear(date='', format='') {
-        let year = checkAndExecute(date, format, -1, (date, format) => {
+        let year = checkAndExecuteCallback(date, format, -1, (date, format) => {
             return ElementExtractor.getDatePart(date, format, 'year', true);
         });
 

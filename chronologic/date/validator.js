@@ -1,6 +1,21 @@
 import { dayExists } from "../maps/day";
 import { monthExists } from "../maps/month";
-import { isEmpty, assertTypeOf, isNumeric } from "../utils/utils";
+import { isEmpty, assertTypeOf, isNumeric, findDelimiter } from "../utils/utils";
+
+
+const validator = {
+    'isAbbrDay': dayExists,
+    'isFullDayName': dayExists,
+    'isAbbrMonth': monthExists,
+    'isFullMonthName': monthExists
+}
+
+const validated = {
+    isAbbrDay: false,
+    isFullDayName: false,
+    isAbbrMonth: false,
+    isFullMonthName: false
+}
 
 export  class Validator {
    
@@ -178,32 +193,16 @@ export  class Validator {
      * @function isAbbreviatedOrFullName
      * @param {number} part
     */
-    static isAbbreviatedOrFullName = (part) => {
+    static isAbbrDatePart = (part) => {
+        return this.isPartOf(part, ['isAbbrDay', 'isAbbrMonth']);
+    };
 
-        // TODO: Split this function into two, one to evaluate abbreviations and the other to evaluate full names
-        if(isEmpty(part)) {
-            throw new Error('No date [part] parameter supplied');
-        }
-
-        var result = {
-            isAbbrDay: false,
-            isAbbrMonth: false,
-            isFullDayName: false,
-            isFullMonthName: false
-        };
-
-        if(assertTypeOf(part, 'string')) {
-            if(part.length > 1) {
-                if(part.length > 3) {
-                    result.isFullMonthName = monthExists(part);
-                    result.isFullDayName = dayExists(part);
-                } else {
-                    result.isAbbrDay = monthExists(part);
-                    result.isAbbrMonth = dayExists(part);
-                }
-            }
-        }
-        return result;
+    /**
+     * 
+     * @param {*} year 
+     */
+    static isDatePartFullName = (part) => {
+        return this.isPartOf(part, ['isFullDayName', 'isFullMonthName']);
     };
 
     /**
@@ -221,17 +220,70 @@ export  class Validator {
             throw new Error('No year parameter supplied');
         }
 
-        var isLeap = (yearVal) => (yearVal / 4) % 1 == 0 ? (yearVal / 100) % 1 != 0 ? true : (yearVal / 400) % 1 == 0 ? true : false : false;
+        var isLeap = (yearToEvaluate) => {
+            if(yearToEvaluate / 4 % 1 == 0) {
+
+                const yearModulusOfOne = yearToEvaluate / 100 % 1;
+                if(yearModulusOfOne != 0 || yearModulusOfOne == 0) {
+                    return true;
+                }
+                return false;
+            }
+            return false; 
+        }
         
         if (assertTypeOf(year, 'number')) {
             return isLeap(year);
         }
 
-        if(assertTypeOf(year, 'string') &&  isNumeric(year)) {
+        if(assertTypeOf(year, 'string') && isNumeric(year)) {
             year = parseInt(year);
             return isLeap(year);
         }
 
         return false;
     };
+
+    static getFormat(date) {
+        const delimiter = findDelimiter(date);
+        
+        if(!delimiter) {
+            throw new Error('Invalid date format');
+        }
+
+        const dateArrayString = date.reverse().split(delimiter);
+
+        const format = '';
+        if(this.isYear(dateArrayString[0])) {
+            format += `yyyy${delimiter}`;
+        }
+
+        if(this.isMonth(dateArrayString[1])) {
+            format += `mm${delimiter}`;
+        }
+
+        if(this.isYear(dateArrayString[2])) {
+            format += `dd${delimiter}`;
+        }
+
+        return format;
+    }
+
+    static isPartOf(part, properties) {
+        if(isEmpty(part)) {
+            throw new Error('No date [part] parameter supplied');
+        }
+        
+        var validatedDeepClone = Object.create(JSON.stringify(validated));
+
+        if(assertTypeOf(part, 'string') && Array.isArray(properties)) {
+            for(let property in properties) {
+                if(part.lenth === 1 || part.length === 3) {
+                    validatedDeepClone[property] = validator[property](part);
+                }
+            }
+        }
+
+        return validatedDeepClone;
+    }
 }

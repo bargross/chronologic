@@ -1,5 +1,5 @@
-import { findIndexes, isEmpty, checkAndExecuteSingleStringValue, findDelimiter } from '../utils/utils';
-import { isMonth, isYear, isDay } from '../date/validator';
+import { findIndexes, isEmpty, findDelimiter } from '../utils/utils';
+import { Validator } from '../date/validator';
 
 export const formats = {
     day: [ // look for regular expressions to match the exact string
@@ -73,17 +73,17 @@ export const getFormat = (date) => {
     switch(date.match(delimiterGlobalRegex).length) {
         case 2:
             date.split(delimiterGlobalRegex).map( (value) => {
-                if(isDay(value)) {
+                if(Validator.isDay(value)) {
                     if(result.indexOf(indexes.day) === -1) {
                         result.push(indexes.day);
                     }
                 }
-                if(isYear(date)) {
+                if(Validator.isYear(date)) {
                     if(result.indexOf(indexes.year) === -1) {
                         result.push(indexes.year);
                     }
                 }
-                if(isMonth(date)) {
+                if(Validator.isMonth(date)) {
                     if(result.indexOf(indexes.month) === -1) {
                         result.push(indexes.month);
                     }

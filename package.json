@@ -4,10 +4,11 @@
   "description": "date time parser",
   "main": "chronologic.js",
   "directories": {
-    "test": "test"
+    "unit-tests": "*"
   },
   "scripts": {
-    "test": "unit-test"
+    "test": "karma start ./unit-tests/karma.conf.js",
+    "test:chrome": "karma start ./unit-tests/karma.conf.js --browsers Chrome"
   },
   "repository": {
     "type": "git",
@@ -26,8 +27,12 @@
   },
   "homepage": "https://github.com/bargross/chronologic#readme",
   "dependencies": {
-    "jasmine": "^3.5.0",
     "rxjs": "^6.5.4"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jasmine": "^3.5.0",
+    "karma": "^4.4.1",
+    "karma-chrome-launcher": "^3.1.0",
+    "karma-jasmine": "^3.1.1"
+  }
 }

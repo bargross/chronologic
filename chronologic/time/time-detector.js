@@ -1,6 +1,6 @@
 import {
-    checkAndExecute, 
-    checkAndExecuteSingleStringValue,
+    checkAndExecuteCallback, 
+    checkAndExecuteSingleValueCallback,
     isEmpty 
 } from '../utils/utils';
 import { isValidTime } from '../time/time'
@@ -13,7 +13,7 @@ export class TimeDetector {
         @description finds a time value within a specific string
     */
     static detectTime (date='') {
-        return checkAndExecuteSingleStringValue(date, '', (validDate) => {
+        return checkAndExecuteSingleValueCallback(date, '', (validDate) => {
             let time;
             if(date.indexOf(',') !== -1) {
                 time = validDate.split(',')[validDate.length-1].trim();
@@ -48,7 +48,7 @@ export class TimeDetector {
     */
     static getTimeValues (time='', option='', hasSeconds=false) {
         var defaultValue = '';
-        return checkAndExecute(time, option, defaultValue, (time, option) => {
+        return checkAndExecuteCallback(time, option, defaultValue, (time, option) => {
             switch(option) {
                 case 'hour':
                     var hour = time.substring(0, 2);

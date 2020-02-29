@@ -20,12 +20,12 @@ export const replaceMultipleValues = (values=[], positions={}, container) => {
         throw new Error('Invalid [positions] parameter provided');
     }
 
-    let temp = container;
+    let tempContainer = container;
     Object.keys(positions).forEach( (option, index) => {
-        temp = replaceValue(values[index], positions[option], temp, option);
+        tempContainer = replaceValue(values[index], positions[option], tempContainer, option);
     });
 
-    return temp;
+    return tempContainer;
 };
 
 /**
@@ -80,7 +80,7 @@ export const findIndexes = (format='', arrayOfOptions=[]) => {
     @description
 */
 export const findDelimiter = (format='') => {
-    return checkAndExecuteSingleStringValue(format, '', (curatedFormat) => {
+    return checkAndExecuteSingleValueCallback(format, '', (curatedFormat) => {
         var regex = /[-, ,. /]/;
         return curatedFormat.match(regex).toString();
     });
@@ -92,7 +92,7 @@ export const findDelimiter = (format='') => {
     @description given two string values it checks for a blank element 
     throws call-stack except 
     */
-   export const checkAndExecuteSingleStringValue = (valueOne, defaultValue, callback) =>{
+   export const checkAndExecuteSingleValueCallback = (valueOne, defaultValue, callback) =>{
        if( !isEmpty(valueOne) ) {
            return callback(valueOne);
         } else {
@@ -106,7 +106,7 @@ export const findDelimiter = (format='') => {
     @description given two string values it checks for a blank (i.e.: empty='', undefined, null)  
     throws call-stack except 
 */
-export const checkAndExecute = (valueOne, valueTwo, defaultValue, callback) =>{
+export const checkAndExecuteCallback = (valueOne, valueTwo, defaultValue, callback) =>{
     if( !isEmpty(valueOne) && !isEmpty(valueTwo)) {
         return callback(valueOne, valueTwo);
     } else { 
